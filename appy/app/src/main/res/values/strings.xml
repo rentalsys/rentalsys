@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">Projeto ERP mjailton </string>
+    <string name="abrir">Abrir</string>
+    <string name="fachar">Fechar</string>
+    <string name="nome_aplicativo">Projeto ERP mjailton </string>
+    <string name="drawer_email">mjailton@gmail.com</string>
+    <string name="action_settings">Settings</string>
+    <string name="no_products_message">No hay productos todavía.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="action_save_invoice_item">Guardar</string>
+    <string name="invoice_number_label">Número de factura</string>
+    <string name="invoice_number_field">Será autogenerado</string>
+    <string name="customer_field">Selecciona un cliente</string>
+    <string name="customer_label">Cliente</string>
+    <string name="creation_date_label">Fecha de creación</string>
+    <string name="invoice_item_label">Items</string>
+    <string name="add_item_button">Añadir item</string>
+    <string name="subtotal_label">Subtotal</string>
+    <string name="tax_label">Impuesto</string>
+    <string name="total_label">Total</string>
+    <string name="error_empty_product">No se encontró el producto</string>
+    <string name="title_activity_produto">ProdutoActivity</string>
+    <string name="title_activity_excluir">ExcluirActivity</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Manoel Jailton</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+</resources>

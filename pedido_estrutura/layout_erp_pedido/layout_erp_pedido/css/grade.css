@@ -1,0 +1,89 @@
+.rows{
+	width:100%;
+	display:inline-block;
+	margin:7px 0
+}
+
+.conteudo.grade{
+	width:960px;
+	margin:0 auto;
+	display:block;
+	/*background:url(../img/grid-0.png) no-repeat;*/
+	border:solid 1px red;
+}
+
+.linha{
+	border:solid 1px #999;
+}
+.cel12:first-child,
+.cel2:first-child,
+.cel3:first-child,
+.cel6:first-child,
+.cel4:first-child,
+.cel8:first-child,
+.cel9:first-child,
+.cel10:first-child,
+.cel11:first-child{
+    margin-left:0px;
+}
+.cel1{
+	width:100%;   
+	float: left;
+    margin-left:1.04%;
+     
+}
+.cel6{
+	width:49.46%;
+	float:left;
+    margin-left:1.04%;
+     
+}
+.cel4{
+	width:32.63%;
+	float:left;
+    margin-left:1.04%;
+     
+}
+.cel3{
+	width:24.22%;
+	float:left;
+    margin-left:1.04%;
+     
+}
+.cel2{
+	width:15.80%;
+	float:left;
+    margin-left:1.04%;
+     
+}
+.cel8{
+	width:66.3%;
+	float:left;
+    margin-left:1.04%;
+     
+}
+.cel9{
+	width:74.70%;
+	float:left;
+    margin-left:1.04%;
+     
+}
+.cel10{
+	width:83.15%;
+	float:left;
+    margin-left:1.04%;
+     
+}
+.cel11{
+	width:91.583333%;
+	float:left;
+    margin-left:1.04%;
+     
+}
+
+.cel12{
+	width:7.38%;
+	float:left;
+    margin-left:1.04%;
+     
+}

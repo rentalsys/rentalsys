@@ -1,0 +1,112 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/keyline_1"
+    android:layout_marginRight="@dimen/keyline_1"
+    android:layout_marginTop="@dimen/keyline_1"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    app:contentPadding="@dimen/keyline_1"
+    tools:context=".activity.AddPedidoActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/product_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Produto"
+            android:textColor="@color/colorPrimary" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/product_selection_field_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txt_selecionar_produto"
+                style="@style/Widget.AppCompat.EditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:focusable="false"
+                android:hint="Selecione um Produto"
+                android:maxLines="1" />
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/quantity_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/keyline_1"
+            android:text="Quantidade"
+            android:textColor="@color/colorPrimary" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/txt_qtde_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hintEnabled="false">
+
+            <EditText
+                android:id="@+id/txt_qtde"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Digite a Quantidade"
+                android:inputType="number"
+                android:text="1" />
+        </android.support.design.widget.TextInputLayout>
+
+
+
+        <TextView
+            android:id="@+id/titulo_preco_produto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/keyline_1"
+            android:text="Preço"
+            android:textColor="@color/colorPrimary" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/preco_produto_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:hintEnabled="false">
+
+            <EditText
+                android:id="@+id/preco_produto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Preço do Produto"
+                android:inputType="number" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/add_item_button_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/keyline_1"
+            android:layout_marginRight="@dimen/keyline_1"
+            android:layout_marginBottom="@dimen/keyline_1">
+
+            <Button
+                android:id="@+id/botao_salvar_item"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/keyline_1"
+                android:paddingBottom="@dimen/keyline_1"
+                android:text="Inserir Item" />
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
+
