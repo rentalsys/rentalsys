@@ -11,6 +11,20 @@ class ComposerStaticInit48d2371bdc53c7798a2a3b42c1171083
         array (
             'app\\' => 4,
         ),
+        'P' => 
+        array (
+            'Psr\\Log\\' => 8,
+        ),
+        'N' => 
+        array (
+            'NFePHP\\NFe\\' => 11,
+            'NFePHP\\Gtin\\' => 12,
+            'NFePHP\\Common\\' => 14,
+        ),
+        'J' => 
+        array (
+            'JsonSchema\\' => 11,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -18,6 +32,40 @@ class ComposerStaticInit48d2371bdc53c7798a2a3b42c1171083
         array (
             0 => __DIR__ . '/../..' . '/app',
         ),
+        'Psr\\Log\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+        ),
+        'NFePHP\\NFe\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nfephp-org/sped-nfe/src',
+        ),
+        'NFePHP\\Gtin\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nfephp-org/sped-gtin/src',
+        ),
+        'NFePHP\\Common\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/nfephp-org/sped-common/src',
+        ),
+        'JsonSchema\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/justinrainbow/json-schema/src/JsonSchema',
+        ),
+    );
+
+    public static $prefixesPsr0 = array (
+        'F' => 
+        array (
+            'ForceUTF8\\' => 
+            array (
+                0 => __DIR__ . '/..' . '/neitanod/forceutf8/src',
+            ),
+        ),
+    );
+
+    public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
@@ -25,6 +73,8 @@ class ComposerStaticInit48d2371bdc53c7798a2a3b42c1171083
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit48d2371bdc53c7798a2a3b42c1171083::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit48d2371bdc53c7798a2a3b42c1171083::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit48d2371bdc53c7798a2a3b42c1171083::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit48d2371bdc53c7798a2a3b42c1171083::$classMap;
 
         }, null, ClassLoader::class);
     }
