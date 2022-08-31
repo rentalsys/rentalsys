@@ -39,6 +39,7 @@ $dversao = date('d/m/Y', strtotime($cur_idv['data']));
                   <li class="dropdown"><a class="nav-link menu-title" href="javascript:void(0)"><i data-feather="home"></i><span>Compras</span></a>
                     <ul class="nav-submenu menu-content">
                       <li><a href="<?php echo URL_BASE . "financeiro/lista_faturar_ordem_compra"?>">Ordem de Compra</a></li>
+                      <li><a href="<?php echo URL_BASE . "fornecedor"?>">Fornecedores</a></li>
                     </ul>
                   </li>
                   

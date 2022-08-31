@@ -120,7 +120,27 @@ class ClienteController extends Controller{
         $data_nascimento    = $_POST["data_nascimento"];
         $sexo               = $_POST["sexo"];
         
-        $nova = Service::editar(["nome"=>$nome, "celular"=>$celular, "email"=>$email, "cpf"=>$cpf, "rg"=>$rg, "iestadual"=>$ie, "imunicipal"=>$im, "data_nascimento"=>$data_nascimento, "sexo"=>$sexo], "id_cliente", "cliente");
+        //endereço de entrega
+        $cep 		   = $_POST["cep"];
+        $cidade 	   = $_POST["cidade"];
+        $estado 	   = $_POST["estado"];
+        $endereco 	   = $_POST["endereco"];
+        $bairro 	   = $_POST["bairro"];
+        $numero	 	   = $_POST["numero"];
+        $complemento   = $_POST["complemento"];
+        
+        //endereço de faturamento
+        $cep_cobranca 		= $_POST["cep_cobranca"];
+        $cidade_cobranca 	= $_POST["cidade_cobranca"];
+        $estado_cobranca 	= $_POST["estado_cobranca"];
+        $endereco_cobranca 	= $_POST["endereco_cobranca"];
+        $bairro_cobranca 	= $_POST["bairro_cobranca"];
+        $numero_cobranca	= $_POST["numero_cobranca"];
+        $complemento		= $_POST["complemento_cobranca"];
+        
+        $nova = Service::editar(["cep"=>$cep, "cidade"=>$cidade, "estado"=>$estado, "endereco"=>$endereco, "bairro"=>$bairro, "numero"=>$numero, "complemento"=>$complemento, 
+                                 "cep_cobranca"=>$cep_cobranca, "cidade_cobranca"=>$cidade_cobranca, "estado_cobranca "=>$estado_cobranca, "endereco_cobranca "=>$endereco_cobranca , "bairro_cobranca "=>$bairro_cobranca, "numero_cobranca"=>$numero_cobranca, "complemento_cobranca"=>$complemento_cobranca,
+                                 "nome"=>$nome, "celular"=>$celular, "email"=>$email, "cpf"=>$cpf, "rg"=>$rg, "iestadual"=>$ie, "imunicipal"=>$im, "data_nascimento"=>$data_nascimento, "sexo"=>$sexo], "id_cliente", "cliente");
         echo json_encode($nova);
     }
     
@@ -137,6 +157,7 @@ class ClienteController extends Controller{
         $nova =  Service::inserir(["id_usuario"=>$id_usuario, "nome"=>$nome, "celular"=>$celular, "email"=>$email, "cpf"=>$cpf, "pf_pj"=>$pf_pj, "telefone"=>$telefone, "cnpj"=>$cnpj], "cliente");
         echo json_encode($nova);
     }
+    
     
 }
 ?>

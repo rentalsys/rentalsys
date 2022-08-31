@@ -685,7 +685,7 @@ $("#hend").on("change",(e)=>verificaRepetidos());
                           </div>
                   	</div>
                   	
-                  	<script type="text/javascript">
+                  			<script type="text/javascript">
                            		$(function(){
                            		$("#produto<?php echo $id_h ?>").on("keyup", function(){
                             	var q  = $(this).val();

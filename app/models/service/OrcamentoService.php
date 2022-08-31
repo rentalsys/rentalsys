@@ -23,5 +23,21 @@ class OrcamentoService{
         $dao = new OrcamentoDao();
         return $dao->getOrcamentoItem($id_pedido);
     }
+    
+    public static function ExcluitPagamento($id_forma, $id_pedido){
+        $dao = new OrcamentoDao();
+        return $dao->ExcluitPagamento($id_forma, $id_pedido);
+    }
+    
+    public static function listaanexo($id_pedido){
+        $dao = new OrcamentoDao();
+        return $dao->listaanexo($id_pedido);
+    }
+    public static function transporte($id_pedido){
+        $dao = new OrcamentoDao();
+        return $dao->transporte($id_pedido);
+    }
+    
+    
 }
 

@@ -22,6 +22,7 @@ class PipelineController extends Controller{
     
     public function index(){
         $dados["lista"] = PipelineService::lista($this->tabela);
+        $dados["status"] = PipelineService::listaStatus("venda_status_pedido");
         $dados["aguardando"] = PipelineService::aguardando($this->tabela);
         $dados["aprovados"] = PipelineService::aprovado($this->tabela);
         $dados["assinados"] = PipelineService::assinado($this->tabela);

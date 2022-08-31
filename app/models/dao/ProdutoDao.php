@@ -18,6 +18,17 @@ class ProdutoDao extends Model{
                 FROM produto AS p
                 INNER JOIN produto_marca AS m ON p.id_marca = m.id_marca
                 INNER JOIN produto_categoria AS c ON p.id_categoria = c.id_categoria
+                WHERE ativo = 's'
+                ORDER BY p.produto ASC";
+        return $this->select($this->db, $sql);
+    }
+    
+    public function listaProdutoInativo(){
+        $sql = "SELECT *
+                FROM produto AS p
+                INNER JOIN produto_marca AS m ON p.id_marca = m.id_marca
+                INNER JOIN produto_categoria AS c ON p.id_categoria = c.id_categoria
+                WHERE ativo != 's'
                 ORDER BY p.produto ASC";
         return $this->select($this->db, $sql);
     }

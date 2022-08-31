@@ -22,7 +22,7 @@ class PedidoController extends Controller{
     
     public function index(){
         $dados["lista"] = PedidoService::lista($this->tabela);
-        $dados["view"]   = "Pedido/Index";
+        $dados["view"]   = "Pedido/index";
         $this->load("template", $dados);
     }
     

@@ -25,6 +25,12 @@ class ProdutoController extends Controller{
         $this->load("template", $dados);
     }
     
+    public function inativo(){
+        $dados["listaInativo"] = ProdutoService::listaProdutoInativo($this->tabela);
+        $dados["view"]  = "Produto/inativo";
+        $this->load("template", $dados);
+    }
+    
     public function create(){
         $dados["produto"] = Flash::getForm();
         $dados["categorias"] = Service::lista("produto_categoria");

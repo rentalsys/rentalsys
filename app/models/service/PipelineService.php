@@ -15,6 +15,11 @@ class PipelineService{
         return $dao->aguardando();
     }
     
+    public static function listaStatus(){
+        $dao = new PipelineDao();
+        return $dao->listaStatus();
+    }
+    
     public static function aprovado(){
         $dao = new PipelineDao();
         return $dao->aprovado();

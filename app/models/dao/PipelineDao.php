@@ -21,6 +21,13 @@ class PipelineDao extends Model{
         return $this->select($this->db, $sql);
     }
     
+    public function listaStatus(){
+        $sql = "SELECT * FROM venda_status_pedido AS s
+                WHERE s.id_status_pedido != 1
+                ";
+        return $this->select($this->db, $sql);
+    }
+    
     public function aguardando(){
         $sql = "SELECT * FROM venda_pedido AS p
                 INNER JOIN cliente AS c ON p.id_cliente = c.id_cliente

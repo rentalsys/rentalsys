@@ -32,6 +32,12 @@ class ProdutoService{
         
     }
     
+    public static function listaProdutoInativo(){
+        $dao = new ProdutoDao();
+        return $dao->listaProdutoInativo();
+        
+    }
+    
     public static function atualizarEstoque($id_produto, $qtde){
         $dao = new ProdutoDao();
         return $dao->atualizarEstoque($id_produto, $qtde);

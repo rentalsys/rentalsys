@@ -117,7 +117,35 @@ abstract class Model{
     function findLike($conn, $campo, $valor, $tabela=null, $isLista=false, $posicao=null){
         $tabela = ($tabela) ? $tabela: $this->tabela;
         try {
-            $sql = "SELECT * FROM ". $tabela . " WHERE " . $campo .  " like :campo ORDER BY ".$campo." ASC" ;
+            $sql = "SELECT * FROM ". $tabela . " WHERE " . $campo .  " like :campo AND ativo = 's' ORDER BY ".$campo." ASC" ;
+            $stmt = $conn->prepare($sql);
+            if(!$posicao){
+                $stmt->bindValue(":campo", "%". $valor."%");
+            }else{
+                if($posicao==1){
+                    $stmt->bindValue(":campo", $valor."%");
+                }else{
+                    $stmt->bindValue(":campo", "%". $valor);
+                }
+            }
+            
+            $stmt->execute();
+            if($isLista){
+                return $stmt->fetchAll(\PDO::FETCH_OBJ);
+            }else{
+                return $stmt->fetch(\PDO::FETCH_OBJ);
+            }
+            
+        }catch (\PDOException $e){
+            throw new \Exception($e->getMessage());
+        }
+    }
+    
+    //Retorna uma consulta por um campo
+    function findLiketrans($conn, $campo, $valor, $tabela=null, $isLista=false, $posicao=null){
+        $tabela = ($tabela) ? $tabela: $this->tabela;
+        try {
+            $sql = "SELECT * FROM ". $tabela . " WHERE " . $campo .  " like :campo AND ativo = 's' AND transportadora = 's' ORDER BY ".$campo." ASC" ;
             $stmt = $conn->prepare($sql);
             if(!$posicao){
                 $stmt->bindValue(":campo", "%". $valor."%");

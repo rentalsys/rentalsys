@@ -31,6 +31,11 @@ class Service{
         return  $dao->getLike($tabela, $campo, $valor,$eh_lista, $posicao);
     } 
     
+    public static  function getLiketrans($tabela, $campo, $valor,$eh_lista=false, $posicao=null){
+        $dao = new Dao();
+        return  $dao->getLiketrans($tabela, $campo, $valor,$eh_lista, $posicao);
+    } 
+    
     public static  function getTotal($tabela, $campAgregacao, $campo=null,  $valor=null){
         $dao = new Dao();
         return  $dao->getTotal($tabela,  $campAgregacao, $campo,  $valor);

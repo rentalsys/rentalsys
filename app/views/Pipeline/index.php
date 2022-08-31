@@ -1,3 +1,4 @@
+<?php include_once 'db.php';?>
 <div class="page-body">
 <div class="container-fluid">
 <div class="page-header">
@@ -53,7 +54,9 @@
 <div class="col-sm-6 table-responsive">
 <!-- Bookmark Start-->
 <div class="bookmark">
-<a href="orcamento" class="btn btn-primary">Orçamentos</a>
+<a href="<?php echo URL_BASE . "pipeline" ?>" class="btn btn-info"> Pipeline</a>
+<a href="<?php echo URL_BASE . "pedido" ?>" class="btn btn-secondary"> Pedidos</a>
+<a href="<?php echo URL_BASE . "orcamento" ?>" class="btn btn-primary"> Orçamentos</a>
 </div>
 <!-- Bookmark Ends-->
 
@@ -233,13 +236,15 @@
           </div>
           
 <script src="<?php echo URL_BASE ?>kan/dist/jkanban.js"></script>
+	<?php 
+	$dados = $conex->query("SELECT id_status_pedido,sum(total) FROM venda_pedido group by id_status_pedido");
+	$dados->execute();
+	$totalByStatus = $dados->fetchAll(PDO::FETCH_ASSOC);	
+	?>
 
-    <script type="text/javascript">
-    //Função de arrastar e trocar status   
-   	$(document).ready(function(){
-   		$("#myKanban")
-   	});
-    </script>
+
+
+
           
 	<script>
       var KanbanTest = new jKanban({
@@ -247,10 +252,11 @@
         gutter: "10px",
         widthBoard: "400px",
         dragBoards: false,
-         dragEl: function (el,source) {
+        dragEl: function (el,source) {
          	//console.log(el);
-         },   
+         },      
          dropEl: async function (el, target, source, sibling) {
+         	let boardoOrigem = source.offsetParent.dataset.order;
          	let boardDestino = target.offsetParent.dataset.order;
          	let elemId = el.dataset.eid;
  	        let reqs = await fetch('<?php echo URL_BASE ?>app/views/Pipeline/controllers/UpdateStatusController.php',{
@@ -258,23 +264,24 @@
               headers:{
                   'Content-Type':'application/x-www-form-urlencoded'
               },
-              body:`id=${elemId}&boardDestino=${boardDestino}`         
+              body:`id=${elemId}&boardDestino=${boardDestino}&boardoOrigem=${boardoOrigem}`         
             });
             let ress = await reqs.json();             
          },  
+         
         boards: [
         {
-            id: "_todo",
+            id: "_todos",
             title: "Orçamento",
             class: "bg-primary",
             dragTo: ["1"],
-            item: [
+            item: [ 
             <?php foreach ($lista as $orcamento){ ?>
               {
                 id: "<?php echo $orcamento->id_pedido ?>",
                 title: 
 				`
-                               <a class="kanban-box" href="#"><span class="date"><?php echo date('d/m/Y', strtotime($orcamento->data_pedido))." ".date('H:i', strtotime($orcamento->hora_pedido)); ?></span> <span class="badge badge-danger f-right">Novo</span> <span class="f-right" style="margin-right:5px"><strong>Nº <?php echo $orcamento->id_pedido ?> </strong></span> 
+                               <a class="kanban-box" href="<?php echo URL_BASE ."orcamento/create/".$orcamento->id_pedido ?>"><span class="date"><?php echo date('d/m/Y', strtotime($orcamento->data_pedido))." ".date('H:i', strtotime($orcamento->hora_pedido)); ?></span> <span class="badge badge-danger f-right">Novo</span> <span class="f-right" style="margin-right:5px"><strong>Nº <?php echo $orcamento->id_pedido ?> </strong></span> 
                                 <h6><?php echo $orcamento->nome ?></h6>
                                 <div class="media" ondragover="allowDrop(event)" data-id-pedido="<?php echo $orcamento->id_pedido ?>" data-id-status="<?php echo $orcamento->id_status_pedido ?>" data-id-statusa="1"><img class="img-20 me-1 rounded-circle" src="<?php echo URL_BASE ?>assets/images/dashboard/<?php echo $orcamento->imagem; ?>" alt="" data-original-title="" title="">
                                   <div class="media-body">
@@ -290,7 +297,6 @@
                                       <li class="d-inline-block me-3">
                                         <p class="f-12">Produtos <?php echo $orcamento->qtd_produtos ?></p>
                                       </li>
-                                      
                                     </ul>
                                   </div>
                                 </div></a>
@@ -299,190 +305,61 @@
               <?php } ?>
             ]
         },
+         <?php foreach ($status as $key => $sta){ 
+            
+             ?>
+                   
         {
             id: "_todo",
-            title: "Agardando aprovação",
-            class: "bg-warning",
-            dragTo: ["2"],
+            title: "<?php echo $sta->status_pedido ?> <span style='float-right:0px'><?php echo number_format($totalByStatus[$key]['sum(total)'],2,",",".") ?></span>",
+            class: "bg-<?php echo $sta->cor ?>",
+            dragTo: ["<?php echo $sta->id_pedido ?>"],
             item: [
-            
-             <?php foreach ($aguardando as $aguardandoap){ ?>
-              {
-                id: "<?php echo $aguardandoap->id_pedido ?>",
+                     <?php    
+                     $ide = $sta->id_status_pedido;
+                     $dados = $conex->query("SELECT * FROM venda_pedido AS p
+                            INNER JOIN cliente AS c ON p.id_cliente = c.id_cliente
+                            INNER JOIN venda_status_pedido AS s ON p.id_status_pedido = s.id_status_pedido 
+                            INNER JOIN usuario AS u ON p.id_usuario = u.id_usuario
+                            WHERE p.id_status_pedido = '$ide'");
+                     $dados->execute();
+                     $linha = $dados->fetchAll(PDO::FETCH_OBJ);
+                     $_SESSION['status2']=0;
+                     
+               foreach ($linha as $itemstatus){                                      
+                   
+                   ?> 
+              {              	              	
+             
+                id: "<?php echo $itemstatus->id_pedido ?>",
                 title: 
 				`
-                               <a class="kanban-box" href="#"><span class="date"><?php echo date('d/m/Y', strtotime($aguardandoap->data_pedido))." ".date('H:i', strtotime($aguardandoap->hora_pedido)); ?></span> <span class="badge badge-danger f-right">Novo</span> <span class="f-right" style="margin-right:5px"><strong>Nº <?php echo $aguardandoap->id_pedido ?> </strong></span> 
-                                <h6><?php echo $aguardandoap->nome ?></h6>
-                                <div class="media" data-id-pedido="<?php echo $aguardandoap->id_pedido ?>" data-id-status="<?php echo $aguardandoap->id_status_pedido ?>" data-id-statusa="2"><img class="img-20 me-1 rounded-circle" src="<?php echo URL_BASE ?>assets/images/dashboard/<?php echo $aguardandoap->imagem; ?>" alt="" data-original-title="" title="">
+                               <a class="kanban-box" href="#"><span class="date"><?php echo date('d/m/Y', strtotime($itemstatus->data_pedido))." ".date('H:i', strtotime($itemstatus->hora_pedido)); ?></span> <span class="badge badge-danger f-right">Novo</span> <span class="f-right" style="margin-right:5px"><strong>Nº <?php echo $itemstatus->id_pedido ?> </strong></span> 
+                                <h6><?php echo $itemstatus->nome ?></h6>
+                                <div class="media" data-id-pedido="<?php echo $itemstatus->id_pedido ?>" data-id-status="<?php echo $itemstatus->id_status_pedido ?>" data-id-statusa="2"><img class="img-20 me-1 rounded-circle" src="<?php echo URL_BASE ?>assets/images/dashboard/<?php echo $itemstatus->imagem; ?>" alt="" data-original-title="" title="">
                                   <div class="media-body">
-                                    <p><?php echo $aguardandoap->nome_usuario ?></p>
+                                    <p><?php echo $itemstatus->nome_usuario ?></p>
                                   </div>
                                 </div>
                                 <div class="d-flex mt-3">
                                   <ul class="list">
-                                    <h6>R$ <?php echo number_format($aguardandoap->total,2,",","."); ?></h6>
+                                    <h6>R$ <?php echo number_format($itemstatus->total,2,",","."); ?></h6>
                                   </ul>
                                   <div class="customers">
                                     <ul>
                                       <li class="d-inline-block me-3">
-                                        <p class="f-12">Produtos <?php echo $aguardandoap->qtd_produtos ?></p>
+                                        <p class="f-12"><?php echo $status2; ?> Produtos <?php echo $itemstatus->qtd_produtos ?></p>
                                       </li>
-                                      
                                     </ul>
                                   </div>
                                 </div></a>
-                            `
-              },
-              <?php } ?>
-            ]
-          } ,
-          
-           {
-            id: "_todo",
-            title: "Aprovado",
-            class: "bg-secondary",
-            dragTo: ["3"],
-            item: [
-              <?php foreach ($aprovados as $aprovado){ ?>
-              {
-                id: "<?php echo $aprovado->id_pedido ?>",
-                title: 
-				`
-                               <a class="kanban-box" href="#"><span class="date"><?php echo date('d/m/Y', strtotime($aprovado->data_pedido))." ".date('H:i', strtotime($aprovado->hora_pedido)); ?></span><span class="badge badge-danger f-right">Novo</span>
-                                <h6><?php echo $aprovado->nome ?></h6>
-                                  <div class="media" data-id-pedido="<?php echo $aprovado->id_pedido ?>" data-id-status="<?php echo $aprovado->id_status_pedido ?>" data-id-statusa="2"><img class="img-20 me-1 rounded-circle" src="<?php echo URL_BASE ?>assets/images/dashboard/<?php echo $aprovado->imagem; ?>" alt="" data-original-title="" title="">
-                                   <div class="media-body">
-                                    <p><?php echo $aprovado->nome_usuario ?></p>
-                                  </div>
-                                </div>
-                                <div class="d-flex mt-3">
-                                  <ul class="list">
-                                    <h6>R$ <?php echo number_format($aprovado->total,2,",","."); ?></h6>
-                                  </ul>
-                                  <div class="customers">
-                                    <ul>
-                                      <li class="d-inline-block me-3">
-                                        <p class="f-12">Produtos <?php echo $aprovado->qtd_produtos ?></p>
-                                      </li>
-                                      
-                                    </ul>
-                                  </div>
-                                </div></a>
-                            `
+               `
               },
               <?php } ?>
             ]
           },
-          {
-            id: "_todo",
-            title: "Contrato Enviado",
-            class: "bg-atencao",
-            item: [
-             <?php foreach ($enviados as $enviado){ ?>
-              {
-                id: "<?php echo $enviado->id_pedido ?>",
-                title: 
-				`
-                               <a class="kanban-box" href="#"><span class="date"><?php echo date('d/m/Y', strtotime($enviado->data_pedido))." ".date('H:i', strtotime($enviado->hora_pedido)); ?></span><span class="badge badge-danger f-right">Novo</span>
-                                <h6><?php echo $enviado->nome ?></h6>
-                                  <div class="media" data-id-pedido="<?php echo $enviado->id_pedido ?>" data-id-status="<?php echo $enviado->id_status_pedido ?>" data-id-statusa="2"><img class="img-20 me-1 rounded-circle" src="<?php echo URL_BASE ?>assets/images/dashboard/<?php echo $enviado->imagem; ?>" alt="" data-original-title="" title="">
-                                   <div class="media-body">
-                                    <p><?php echo $enviado->nome_usuario ?></p>
-                                  </div>
-                                </div>
-                                <div class="d-flex mt-3">
-                                  <ul class="list">
-                                    <h6>R$ <?php echo number_format($enviado->total,2,",","."); ?></h6>
-                                  </ul>
-                                  <div class="customers">
-                                    <ul>
-                                      <li class="d-inline-block me-3">
-                                        <p class="f-12">Produtos <?php echo $enviado->qtd_produtos ?></p>
-                                      </li>
-                                      
-                                    </ul>
-                                  </div>
-                                </div></a>
-                            `
-              },
-              <?php } ?>
-            ]
-          },
-          {
-            id: "_todo",
-            title: "Contrato Assinado",
-            class: "bg-danger",
-            dragTo: ["_working"],
-            item: [
-             <?php foreach ($assinados as $assinado){ ?>
-              {
-                id: "<?php echo $assinado->id_pedido ?>",
-                title: 
-				`
-                               <a class="kanban-box" href="#"><span class="date"><?php echo date('d/m/Y', strtotime($assinado->data_pedido))." ".date('H:i', strtotime($assinado->hora_pedido)); ?></span><span class="badge badge-danger f-right">Novo</span>
-                                <h6><?php echo $assinado->nome ?></h6>
-                                  <div class="media" data-id-pedido="<?php echo $assinado->id_pedido ?>" data-id-status="<?php echo $assinado->id_status_pedido ?>" data-id-statusa="2"><img class="img-20 me-1 rounded-circle" src="<?php echo URL_BASE ?>assets/images/dashboard/<?php echo $assinado->imagem; ?>" alt="" data-original-title="" title="">
-                                   <div class="media-body">
-                                    <p><?php echo $assinado->nome_usuario ?></p>
-                                  </div>
-                                </div>
-                                <div class="d-flex mt-3">
-                                  <ul class="list">
-                                    <h6>R$ <?php echo number_format($assinado->total,2,",","."); ?></h6>
-                                  </ul>
-                                  <div class="customers">
-                                    <ul>
-                                      <li class="d-inline-block me-3">
-                                        <p class="f-12">Produtos <?php echo $assinado->qtd_produtos ?></p>
-                                      </li>
-                                      
-                                    </ul>
-                                  </div>
-                                </div></a>
-                            `
-              },
-              <?php } ?>
-            ]
-          }, 
-          
-          {
-            id: "_todo",
-            title: "Faturado",
-            class: "bg-success",
-            dragTo: ["_working"],
-            item: [
-             <?php foreach ($faturados as $faturado){ ?>
-              {
-                id: "<?php echo $faturado->id_pedido ?>",
-                title: 
-				`
-                               <a class="kanban-box" href="#"><span class="date"><?php echo date('d/m/Y', strtotime($faturado->data_pedido))." ".date('H:i', strtotime($faturado->hora_pedido)); ?></span><span class="badge badge-danger f-right">Novo</span>
-                                <h6><?php echo $faturado->nome ?></h6>
-                                  <div class="media" data-id-pedido="<?php echo $faturado->id_pedido ?>" data-id-status="<?php echo $faturado->id_status_pedido ?>" data-id-statusa="2"><img class="img-20 me-1 rounded-circle" src="<?php echo URL_BASE ?>assets/images/dashboard/<?php echo $faturado->imagem; ?>" alt="" data-original-title="" title="">
-                                   <div class="media-body">
-                                    <p><?php echo $faturado->nome_usuario ?></p>
-                                  </div>
-                                </div>
-                                <div class="d-flex mt-3">
-                                  <ul class="list">
-                                    <h6>R$ <?php echo number_format($faturado->total,2,",","."); ?></h6>
-                                  </ul>
-                                  <div class="customers">
-                                    <ul>
-                                      <li class="d-inline-block me-3">
-                                        <p class="f-12">Produtos <?php echo $faturado->qtd_produtos ?></p>
-                                      </li>
-                                      
-                                    </ul>
-                                  </div>
-                                </div></a>
-                            `
-              },
-              <?php } ?>
-            ]
-          } 
-          
-                  
+          <?php } ?>
+           
         ]
       });
 

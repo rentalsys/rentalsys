@@ -41,6 +41,11 @@ class FornecedorController extends Controller{
         $this->load("template", $dados);
     }
     
+    public function buscar($f){
+        $fornecedor = Service::getLike("fornecedores", "nomefornecedor", $f, true);
+        echo json_encode($fornecedor);
+    }
+    
     public function salvar(){
         $fornecedor = new \stdClass();
         $fornecedor->id_fornecedor    = $_POST["id_fornecedor"];
@@ -90,10 +95,7 @@ class FornecedorController extends Controller{
         $this->redirect(URL_BASE."fornecedor");
     }
     
-    public function buscar($t){
-        $fornecedores = Service::getLike($this->tabela, "nome_fornecedor", $t, true);
-        echo json_encode($fornecedores);
-    }
+
     
 }
 ?>

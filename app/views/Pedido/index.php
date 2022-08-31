@@ -53,7 +53,9 @@
 <div class="col-sm-6">
 <!-- Bookmark Start-->
 <div class="bookmark">
-<a href="orcamento" class="btn btn-primary">Orçamentos</a>
+<a href="<?php echo URL_BASE . "pipeline" ?>" class="btn btn-info"> Pipeline</a>
+<a href="<?php echo URL_BASE . "pedido" ?>" class="btn btn-secondary"> Pedidos</a>
+<a href="<?php echo URL_BASE . "orcamento" ?>" class="btn btn-primary"> Orçamentos</a>
 </div>
 <!-- Bookmark Ends-->
 

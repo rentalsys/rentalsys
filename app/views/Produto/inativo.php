@@ -13,7 +13,7 @@
                 <div class="col-sm-6">
                   <!-- Bookmark Start-->
                   <div class="bookmark">
-                  <a href="<?php echo URL_BASE . "produto/inativo" ?>" class="btn btn-danger"> Inativos</a>
+                   <a href="<?php echo URL_BASE . "produto" ?>" class="btn btn-success"> Ativos</a>
                   <a href="<?php echo URL_BASE . "categoria" ?>" class="btn btn-primary"> Categorias</a>
                   <a href="<?php echo URL_BASE . "marca" ?>" class="btn btn-primary"> Marcas</a>
                   <a href="<?php echo URL_BASE . "produto/create" ?>" class="btn btn-primary"> Cadastrar Produto</a>
@@ -31,7 +31,7 @@
               <div class="col-sm-12">
                 <div class="card">
                   <div class="card-header pb-0">
-                    <h5>Total de produtos cadastrados:  </h5><span></span>
+                    <h5>Total de produtos cadastrados Inativos:  </h5><span></span>
                   </div>
                    <?php 
                 $this->verMsg();
@@ -54,7 +54,7 @@
                           </tr>
                         </thead>
                         <tbody>
-                        <?php foreach ($lista as $produto){?>
+                        <?php foreach ($listaInativo as $produto){?>
                         <?php $imagem = ($produto->imagem) ? $produto->imagem: "semproduto.png" ?>
                           <tr>
                           <td scope="row" style="text-align:center"><?php echo $produto->id_produto ?></td>

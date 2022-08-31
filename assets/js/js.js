@@ -123,4 +123,14 @@ function lista_itens(data){
      $("#lista_itens").html(html);
     
 }
+
+function excluirarquivo(obj){
+	var entidade  		= $(obj).attr('data-entidade');
+	var id_arquivo  		= $(obj).attr('data-id');	
+	var id  			= $(obj).attr('data-id-pedido');	
+	alert(id);
+	if(confirm('Deseja realmente excluir esse arquivo?')){
+		window.location.href = base_url + entidade +"/excluirarquivo/" + id + "?id_arquivo=" + id_arquivo;
+	}
+}
 	

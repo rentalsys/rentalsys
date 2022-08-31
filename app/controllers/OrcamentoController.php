@@ -11,8 +11,9 @@ use app\util\UtilService;
 class OrcamentoController extends Controller{
     private $tabela = "venda_pedido";
     private $campo  = "id_pedido";
+  
     
-    public function __construct(){
+    public function __construct(){        
         $this->usuario = UtilService::getUsuario();
         if(!$this->usuario){
             $this->redirect(URL_BASE ."login");
@@ -22,7 +23,7 @@ class OrcamentoController extends Controller{
     
     public function index(){
         $dados["lista"] = OrcamentoService::lista($this->tabela);
-        $dados["view"]   = "Orcamento/Index";
+        $dados["view"]   = "Orcamento/index";
         $this->load("template", $dados);
     }
     
@@ -59,7 +60,10 @@ class OrcamentoController extends Controller{
         $dados["orcamento_pedido"]  = $orcamento;
         $dados["itenspedido"]       = $itens;
         $dados["formas"]            = Service::lista("venda_forma_pagamento");
+        $dados["bancos"]            = Service::lista("bancos");
+        $dados["tipofrete"]         = Service::lista("venda_tipo_frete");
         $dados["lista"]             = Service::lista($this->tabela);
+        $dados["pedidoanexo"]       = OrcamentoService::listaanexo($id_pedido);
         $dados["view"]              = "Orcamento/Create";
         $this->load("template", $dados);
     }
@@ -136,7 +140,7 @@ class OrcamentoController extends Controller{
     
     public function Finalizar($id){
         Service::editar(["id_status_pedido"=>2, "finalizado"=>"s", "id_pedido"=>$id], "id_pedido", "venda_pedido");
-        $this->redirect(URL_BASE."pedido/create/".$id);
+        $this->redirect(URL_BASE."pipeline");
     }
     
     public function atualizaTotalBanco(){
@@ -151,6 +155,100 @@ class OrcamentoController extends Controller{
         echo json_encode($nova);
     }
     
+    public function CadastrarAtualizarPagamento($id){
+        
+        $id_pedido_pagamento    = $_POST["id_pedido_pagamento"];
+        $dataf_pr               = $_POST["data_pagamento"];
+        $dataf = explode("/", $dataf_pr);
+        $validaf = checkdate((int)$dataf[1], (int)$dataf[0], (int)$dataf[2]);
+        $data_pagamento = $dataf[2]."-".$dataf[1]."-".$dataf[0];
+        $id_forma_pagamento     = $_POST["id_forma_pagamento"];
+        $id_banco 			    = $_POST["id_banco"];
+        $parcela 			    = $_POST["parcela"];
+        $nparcelas 			    = $_POST["nparcelas"];
+        $valor_pedido		    = $_POST["valor_pedido"];
+        $valor_parcial		    = $_POST["valor_parcial"];
+        $valor_apagar 		    = number_format(str_replace(",",".",str_replace(".","",$_POST["valor_apagar"])), 2, '.', '');
+        $taxa	 			    = $_POST["taxa"];
+        $id_forma               = $_POST["id_forma"];
+        $anexo                  = $_POST["anexo"];
+        
+        if($id_pedido_pagamento){
+            $existente = Service::editar(["id_pedido"=>$id, "data_pagamento"=>$data_pagamento, "id_forma_pagamento"=>$id_forma_pagamento, "id_banco"=>$id_banco, "parcela"=>$parcela, "nparcelas"=>$nparcelas, "valor_pedido"=>$valor_pedido, "valor_parcial"=>$valor_parcial, "valor_apagar"=>$valor_apagar, "taxa"=>$taxa, "id_forma"=>$id_forma, "anexo"=>$anexo, "id_pedido_pagamento"=>$id_pedido_pagamento], "id_pedido_pagamento", "venda_pedido_pagamento");
+        echo json_encode($existente);
+        } else{
+            
+            $nova =  Service::inserir(["id_pedido"=>$id, "data_pagamento"=>$data_pagamento, "id_forma_pagamento"=>$id_forma_pagamento, "id_banco"=>$id_banco, "parcela"=>$parcela, "nparcelas"=>$nparcelas, "valor_pedido"=>$valor_pedido, "valor_parcial"=>$valor_parcial, "valor_apagar"=>$valor_apagar, "taxa"=>$taxa, "id_forma"=>$id_forma, "anexo"=>$anexo], "venda_pedido_pagamento");
+        echo json_encode($nova);
+        }
+    }
+    
+    
+    public function enviaArquivo1($id)
+    { 
+        $upload = isset($_FILES['anexo01arquivo']) ? $_FILES['anexo01arquivo'] : null;        
+        if(substr($_SERVER['DOCUMENT_ROOT'],-1)=='/'){ $dirReq = $_SERVER['DOCUMENT_ROOT']; }else{ $dirReq = "{$_SERVER['DOCUMENT_ROOT']}/"; }
+        move_uploaded_file($upload['tmp_name'], $dirReq.'022022/app/upload/' .$_POST['nome_arquivo']);
+     }
+     
+     public function enviaArquivo2($id)
+     {
+         $upload = isset($_FILES['anexo02arquivo']) ? $_FILES['anexo02arquivo'] : null;
+         if(substr($_SERVER['DOCUMENT_ROOT'],-1)=='/'){ $dirReq = $_SERVER['DOCUMENT_ROOT']; }else{ $dirReq = "{$_SERVER['DOCUMENT_ROOT']}/"; }
+         move_uploaded_file($upload['tmp_name'], $dirReq.'022022/app/upload/' .$_POST['nome_arquivo02']);
+     }
+     
+     public function enviaArquivo3($id)
+     {
+         $upload = isset($_FILES['anexo03arquivo']) ? $_FILES['anexo03arquivo'] : null;
+         if(substr($_SERVER['DOCUMENT_ROOT'],-1)=='/'){ $dirReq = $_SERVER['DOCUMENT_ROOT']; }else{ $dirReq = "{$_SERVER['DOCUMENT_ROOT']}/"; }
+         move_uploaded_file($upload['tmp_name'], $dirReq.'022022/app/upload/' .$_POST['nome_arquivo03']);
+     }
+     
+     public function enviaArquivo4($id)
+     {
+         $upload = isset($_FILES['anexo04arquivo']) ? $_FILES['anexo04arquivo'] : null;
+         if(substr($_SERVER['DOCUMENT_ROOT'],-1)=='/'){ $dirReq = $_SERVER['DOCUMENT_ROOT']; }else{ $dirReq = "{$_SERVER['DOCUMENT_ROOT']}/"; }
+         move_uploaded_file($upload['tmp_name'], $dirReq.'022022/app/upload/' .$_POST['nome_arquivo04']);
+     }
+     
+     public function enviaArquivo5($id)
+     {
+         $upload = isset($_FILES['anexo05arquivo']) ? $_FILES['anexo05arquivo'] : null;
+         if(substr($_SERVER['DOCUMENT_ROOT'],-1)=='/'){ $dirReq = $_SERVER['DOCUMENT_ROOT']; }else{ $dirReq = "{$_SERVER['DOCUMENT_ROOT']}/"; }
+         move_uploaded_file($upload['tmp_name'], $dirReq.'022022/app/upload/' .$_POST['nome_arquivo05']);
+     }
+    
+     public function ExcluitPagamento($id){
+         $id_pedido     = $_POST["id_pedido"];
+         $id_forma      = $_POST["id_forma"];
+         $novaEQT = OrcamentoService::ExcluitPagamento($id_forma, $id_pedido);
+         echo json_encode($novaEQT);
+     }
+    
+     public function AtualizarTextosBD($id){
+         $id_pedido          = $_POST["id_pedido"];
+         $textolivre         = $_POST["textolivre"];
+         $observacao         = $_POST["observacao"];
+         
+         $nova = Service::editar(["observacao"=>$observacao, "textolivre"=>$textolivre, "id_pedido"=>$id_pedido], "id_pedido", "venda_pedido");
+         echo json_encode($nova);
+     }
+     
+     public function atualizarTransportadora($id){
+         $id_pedido                 = $_POST["id_pedido"];
+         $id_transportadora         = $_POST["id_transportadora"];
+         $id_tipo_frete             = $_POST["id_tipo_frete"];
+         $data_entrega_prevista     = $_POST["data_entrega_prevista"];
+         $dataBR = $dataf = explode("/", $data_entrega_prevista);
+         $validaf = checkdate((int)$dataf[1], (int)$dataf[0], (int)$dataf[2]);
+         $data_prevista_ing = $dataf[2]."-".$dataf[1]."-".$dataf[0];
+       
+         
+         $nova = Service::editar(["id_transportadora"=>$id_transportadora, "id_tipo_frete"=>$id_tipo_frete, "data_entrega_prevista"=>$data_prevista_ing, "id_pedido"=>$id_pedido], "id_pedido", "venda_pedido");
+         echo json_encode($nova);
+     }
+     
     public function AtualizaClientePedido($id){
         $id_pedido          = $_POST["id_pedido"];
         $id_comprador       = $_POST["id_comprador"];
@@ -192,10 +290,41 @@ class OrcamentoController extends Controller{
     }
     
     public function buscar($q){
-        $pedidos = Service::getLike($this->tabela, "id_pedido", $q, true);
-        echo json_encode($pedidos);
+        $for = Service::getLiketrans("fornecedor", "nome_fornecedor", $q, true);
+        echo json_encode($for);
     }
     
+    public function excluirarquivo($id){
+        $id_arquivo = $_GET['id_arquivo'];
+        //echo $img;
+        //exit;
+        Service::excluir("venda_pedido_arquivo", "id_pedido_arquivo", $id_arquivo);
+        $this->redirect(URL_BASE."orcamento/create/".$id);
+    }
+
+}
+
+if (!empty($_FILES)) {
+    $imagePath = isset($_FILES["file"]["name"]) ? $_FILES["file"]["name"] : "Undefined";
+    $targetPath = "app/upload/";
+    $imagePath = $targetPath . $imagePath;
+    $tempFile = $_FILES['file']['tmp_name'];
+    
+    $nomearq = $_FILES['file']['name'];
+    
+    $targetFile = $targetPath . $_FILES['file']['name'];
+    
+    if (move_uploaded_file($tempFile, $targetFile)) {
+        echo "true";
+    } else {
+        echo "false";
+    }
+}
+
+if (!empty($_GET["action"]) && $_GET["action"] == "saveimg") {
+    $id_pedido             = $_POST['id_pedido'];
+    $nova =  Service::inserir(["id_pedido"=>$id_pedido, "arquivo"=>$nomearq], "venda_pedido_arquivo");
+    echo json_encode($nova);
 }
 ?>
 

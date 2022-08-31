@@ -25,6 +25,11 @@ class Dao extends Model{
         return  $this->findEntre($this->db,$campo, $valor1, $valor2, $tabela);
     } 
     
+    
+    public function getLiketrans($tabela, $campo, $valor, $eh_lista, $posicao){
+        return  $this->findLiketrans($this->db,$campo, $valor, $tabela, $eh_lista, $posicao);
+    }
+    
     public function getLike($tabela, $campo, $valor, $eh_lista, $posicao){
         return  $this->findlike($this->db,$campo, $valor, $tabela, $eh_lista, $posicao);
     }

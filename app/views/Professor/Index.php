@@ -315,8 +315,8 @@ session_start();
         var tempo_e = (tempo_t.slice(0, -3));
         document.querySelector('#idEvento').value = idEvento;
         
-        document.querySelector('#texto_mudar').value = "Participou do treinamento do equipamento " + ress.produto + " promovido pela RentalMed Locação e Comércio de Equipamentos, realizado em " + DataBR + " com carga horária total de " + tempo_e + " hs, ministrado pelo(a) Prof(a) " + ress.nome_usuario + ".";
-        document.querySelector('#texto_padrao').value = "Participou do treinamento do equipamento " + ress.produto + " promovido pela RentalMed Locação e Comércio de Equipamentos, realizado em " + DataBR + " com carga horária total de " + tempo_e + " hs, ministrado pelo(a) Prof(a) " + ress.nome_usuario + ".";
+        document.querySelector('#texto_mudar').value = "Participou do treinamento do equipamento " + ress.produto + ", promovido pela RentalMed Locação e Comércio de Equipamentos, realizado em " + DataBR + " com carga horária total de " + tempo_e + " hs, ministrado pelo(a) Prof(a) " + ress.nome_usuario + ".";
+        document.querySelector('#texto_padrao').value = "Participou do treinamento do equipamento " + ress.produto + ", promovido pela RentalMed Locação e Comércio de Equipamentos, realizado em " + DataBR + " com carga horária total de " + tempo_e + " hs, ministrado pelo(a) Prof(a) " + ress.nome_usuario + ".";
         
         let ocupEdit = ress.id_ocupacao;
         if(ocupEdit == "1"){

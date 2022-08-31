@@ -12,8 +12,7 @@ $_SESSION['random'] = rand(0,10000000);
 
 
 <div class="page-body">
-<link rel="stylesheet" type="text/css" href="<?php echo URL_BASE ?>drop/dropzone/dropzone.css" />
-<script type="text/javascript" src="<?php echo URL_BASE ?>drop/dropzone/dropzone.js"></script>
+
 <script>
     window.onload = function () {
             let idPedido = <?php echo $orcamento_pedido->id_pedido; ?>;              
@@ -24,9 +23,7 @@ $_SESSION['random'] = rand(0,10000000);
     			data: {id:idPedido},
     			success: function(result){
     				$('#n_pedido').append(result.nome);
-    				let data_ing_entrega = result.data_entrega_prevista;
-    				let data_brasileira_entrega = data_ing_entrega.split('-').reverse().join('/');
-    				$("#data_entrega_prevista").val(data_brasileira_entrega);
+    				
     				let e_comprador = result.comprador;
                     if(e_comprador == "s"){
                     $("input[name=comprador][value='s']").prop("checked",true);
@@ -42,10 +39,6 @@ $_SESSION['random'] = rand(0,10000000);
                     				$("#email_comprador").val(result.email);
                     				$("#telefone_comprador").val(result.telefone);
                     				$("#data_nascimento").val(result.data_nascimento);
-									let id_comprador = result.id_comprador;
-                                    if(id_comprador != null){
-                                     $("#validar").show();
-                                     }
                     				
                     				let e_pf_pj = result.pf_pj;
                     				//alert(e_pf_pj);
@@ -79,78 +72,27 @@ $_SESSION['random'] = rand(0,10000000);
     			}
 			});
 			
-			//leitura do pagamento 01
 			
 			 $.ajax({
     			url: '<?php echo URL_BASE ?>app/views/orcamento/controller/pedidospagamentos.php',  
     			type: 'POST',
     			dataType: 'json',
-    			data: {id:idPedido, id_forma: 1},
+    			data: {id:idPedido},
     			success: function(result){
     				let res = result.primeiro;
-    				$("#id_pedido_pagamento01").val(result.id_pedido_pagamento);
     				$("#forma_pagamento01").val(result.id_forma_pagamento);
     				$("#banco_pagamento01").val(result.id_banco);
-    				if(result.valor_apagar){
-    				let vpagar = result.valor_apagar;
-    				var vezez_escolhidas01 = result.nparcelas;
-    				$("#valor_pgto01").val(parseFloat(vpagar).toFixed(2).replace(".", ","));
-    				}
-    				
+    				$("#valor_pgto01").val(result.valor_apagar);
     				$("#taxa01").val(result.taxa); 
     				let data_ing = result.data_pagamento;
     				let data_brasileira = data_ing.split('-').reverse().join('/');
     				$("#primeira_parcela01").val(data_brasileira);
-    				let anexo01 = result.anexo;
-    				$("#arquivoanexo01").val(anexo01);
-    				if(anexo01) {
-    				$("#anexo01ver").show();
+    				let anexo = result.anexo;
+    				$("#arquivoanexo01").val(anexo);
+    				if(anexo != null) {
     				}
- 
+    				$("#anexo01ver").show(); 
     				
-    				
-    				if(result.id_pedido_pagamento){  
-    				 
-    				 	 let total_pgto01str = document.querySelector('#valor_pgto01').value;
-                      	 let total_somadostr = $("#total_somado").val();                      
-                         let total_pgto01 	= total_pgto01str.replace('.', '').replace(',', '.');
-                         let total_somado 	= total_somadostr.replace('.', '').replace(',', '.');
-    				  	 let restante02 = parseFloat(total_somado.replace(',', '.')) - parseInt(total_pgto01);
-    				  	 //alert(restante02);
-                      	 document.getElementById("total_restante02").value = parseFloat(restante02).toFixed(2).replace(".", ",");
-                      	 
-                      	 
-                      	 let datap01 = data_brasileira;
-                      	 let forma01 = result.nparcelas;
-                      	 let parcela01 = parseInt(total_pgto01)/parseInt(forma01);
-                      	 //alert(parcela01);
-                         	for (i = 1; i <= forma01; i++) {		
-							 
-                    		 document.getElementById("parcelas_01").innerHTML += "[ " + i + " ] R$ " + parseFloat(parcela01).toFixed(2).replace(".", ",") + " - " + datap01 + " | ";
-                    			var datainicial = datap01;
-                                var dias = 1;
-                                var partes = datainicial.split("/");
-                                var ano = partes[2];
-                                var mes = partes[1]-1;
-                                var dia = partes[0];
-                                
-                                datainicial = new Date(ano,mes,dia);
-                                datafinal = new Date(datainicial);
-                                datafinal.setMonth(datainicial.getMonth()+1);
-                                
-                                var dd = ("0" + datafinal.getDate()).slice(-2);
-                                var mm = ("0" + (datafinal.getMonth()+1)).slice(-2);
-                                var y = datafinal.getFullYear();
-                                
-                                var dataformatada = dd + '/' + mm + '/' + y;
-                                datap01 = dataformatada;
- 							   // criar um if para descartar feriados e finais de semana
- 							   
- 							   
-                    		}
-                      	 
-                      	 $("#pagamento_02").show();
-    				}
     				
     				let selFormaPagamento = result.id_forma_pagamento;
     				let nParcelas = document.querySelector('#nvezes01');
@@ -179,13 +121,13 @@ $_SESSION['random'] = rand(0,10000000);
                         opt.value = i+1;
                         opt.innerHTML = i+1;
                         nParcelas.appendChild(opt);
-                        
-                        $("#nvezes01").val(vezez_escolhidas01)
                     }
                     nParcelas.removeAttribute('disabled'); 
+
     				console.log(resultado);
     			}
 			});
+
     				console.log(result);
     			}
 			});
@@ -228,122 +170,7 @@ $_SESSION['random'] = rand(0,10000000);
               	});
             }
             
-            //forma de pagamento02
-            
-            $.ajax({
-    			url: '<?php echo URL_BASE ?>app/views/orcamento/controller/pedidospagamentos.php',  
-    			type: 'POST',
-    			dataType: 'json',
-    			data: {id:idPedido, id_forma: 2},
-    			success: function(result02){
-    				let res = result02.primeiro;
-    				$("#id_pedido_pagamento02").val(result02.id_pedido_pagamento);
-    				$("#forma_pagamento02").val(result02.id_forma_pagamento);
-    				$("#banco_pagamento02").val(result02.id_banco);
-    				var vezez_escolhidas02 = result02.nparcelas;
-    				if(result02.valor_apagar){
-    				let vpagar02 = result02.valor_apagar;
-    				$("#valor_pgto02").val(parseFloat(vpagar02).toFixed(2).replace(".", ","));
-    				}
-    				;
-    				$("#taxa02").val(result02.taxa); 
-    				if(result02.data_pagamento){
-    				let data_ing02 = result02.data_pagamento;
-    				
-    				var data_brasileira02 = data_ing02.split('-').reverse().join('/');
-    				
-    				$("#primeira_parcela02").val(data_brasileira02);
-					}
-					var anexo02 = result02.anexo;
-    				$("#arquivoanexo02").val(anexo02);
-    				if(anexo02) {
-    				$("#anexo02ver").show(); 
-    				}
-
-    				if(result02.id_pedido_pagamento){  
-
-    				 	 var total_pgto02str 		= document.querySelector('#valor_pgto02').value;
-                      	 const total_restante02str 	= document.getElementById("total_restante02").value;                      
-                         var total_pgto02 			= total_pgto02str.replace('.', '').replace(',', '.');
-                         var total_restante02 		= total_restante02str.replace('.', '').replace(',', '.');
-    				  	 var restante03 			= parseFloat(total_restante02.replace(',', '.')) - parseInt(total_pgto02);
-                      	 document.getElementById("total_restante03").value = parseFloat(restante03).toFixed(2).replace(".", ",");
-                      	 
-                      	 let datap02 = data_brasileira02;
-                      	 
-                      	 let forma02 = result02.nparcelas;
-                      	 let parcela02 = parseInt(total_pgto02)/parseInt(forma02);
-                      	
-                         	for (i = 1; i <= forma02; i++) {		
-							 
-                    		 document.getElementById("parcelas_02").innerHTML += "[ " + i + " ] R$ " + parseFloat(parcela02).toFixed(2).replace(".", ",") + " - " + datap02 + " | ";
-                    			var datainicial02 = datap02;
-                                var dias = 1;
-                                var partes = datainicial02.split("/");
-                                var ano = partes[2];
-                                var mes = partes[1]-1;
-                                var dia = partes[0];
-                                
-                                datainicial02 = new Date(ano,mes,dia);
-                                datafinal02 = new Date(datainicial02);
-                                datafinal02.setMonth(datainicial02.getMonth()+1);
-                                
-                                var dd = ("0" + datafinal02.getDate()).slice(-2);
-                                var mm = ("0" + (datafinal02.getMonth()+1)).slice(-2);
-                                var y = datafinal02.getFullYear();
-                                
-                                var dataformatada02 = dd + '/' + mm + '/' + y;
-                                datap02 = dataformatada02;
- 							   // criar um if para descartar feriados e finais de semana
-                    		}
-                      	 
-                      	 
-                      	 $("#pagamento_03").show();
-    				}
-    				
-    				let selFormaPagamento02 = result02.id_forma_pagamento;
-    				
-
-    				let nParcelas02 = document.querySelector('#nvezes02');
-    				$.ajax({
-        			url: '<?php echo URL_BASE ?>app/views/orcamento/controller/pedidosformapagamento.php',  
-        			type: 'POST',
-        			dataType: 'json',
-        			data: {formadepagamento:selFormaPagamento02},
-        			success: function(resultado02){
-					let maxParcelas02 = resultado02.parcela_max;  
-					let obrigatorio02 = resultado02.obrigatorio; 
- 
-              		if(obrigatorio02 == "a"){
-              		$("#anexo02").show(); 
-              		$("#proposta02").hide(); 
-              		}
-              		
-              		if(obrigatorio02 == "n"){
-              		$("#anexo02").hide(); 
-              		$("#proposta02").show(); 
-              		} 
-              				         		
-              		nParcelas02.options.length = 0;
-                   for (let i = 0; i<maxParcelas02; i++){
-                        let opt = document.createElement('option');
-                        opt.value = i+1;
-                        opt.innerHTML = i+1;
-                        nParcelas02.appendChild(opt);
-                        $("#nvezes02").val(vezez_escolhidas02);
-                    }
-                    nParcelas02.removeAttribute('disabled'); 
-
-    				console.log(resultado02);
-    			}
-			});
-
-    				console.log(result02);
-    			}
-			});
-			
-			// colocar numero de vezes, taxa e arquivo
-			if(document.querySelector('#forma_pagamento02')){	
+            if(document.querySelector('#forma_pagamento02')){	
                 	
               	let selFormaPagamento = document.querySelector('#forma_pagamento02');
               	let nParcelas = document.querySelector('#nvezes02');
@@ -369,7 +196,8 @@ $_SESSION['random'] = rand(0,10000000);
               		$("#proposta02").show(); 
               		}
               		
-              		document.getElementById('taxa02').value = ress.taxa;           		
+              		document.getElementById('taxa02').value = ress.taxa;  
+              		document.getElementById('tipo_pgto02').innerHTML = ress.forma;		         		
               		nParcelas.options.length = 0;
                    for (let i = 0; i<maxParcelas; i++){
                         let opt = document.createElement('option');
@@ -381,122 +209,7 @@ $_SESSION['random'] = rand(0,10000000);
               	});
             }
             
-			//forma de pagamento03
-            
-            $.ajax({
-    			url: '<?php echo URL_BASE ?>app/views/orcamento/controller/pedidospagamentos.php',  
-    			type: 'POST',
-    			dataType: 'json',
-    			data: {id:idPedido, id_forma: 3},
-    			success: function(result03){
-    				let res = result03.primeiro;
-    				$("#id_pedido_pagamento03").val(result03.id_pedido_pagamento);
-    				$("#forma_pagamento03").val(result03.id_forma_pagamento);
-    				$("#banco_pagamento03").val(result03.id_banco);
-    				var vezez_escolhidas03 = result03.nparcelas;
-    				if(result03.valor_apagar){
-    				let vpagar03 = result03.valor_apagar;
-    				$("#valor_pgto03").val(parseFloat(vpagar03).toFixed(2).replace(".", ","));
-    				}
-    				;
-    				$("#taxa03").val(result03.taxa); 
-    				if(result03.data_pagamento){
-    				let data_ing03 = result03.data_pagamento;
-    				
-    				var data_brasileira03 = data_ing03.split('-').reverse().join('/');
-    				
-    				$("#primeira_parcela03").val(data_brasileira03);
-					}
-					var anexo03 = result03.anexo;
-    				$("#arquivoanexo03").val(anexo03);
-    				if(anexo03) {
-    				$("#anexo03ver").show(); 
-    				}
-
-    				if(result03.id_pedido_pagamento){  
-
-    				 	 let total_pgto03str 		= document.querySelector('#valor_pgto03').value;
-                      	 const total_restante03str 	= $("#total_restante03").val();                      
-                         let total_pgto03 			= total_pgto03str.replace('.', '').replace(',', '.');
-                         let total_restante03 		= total_restante03str.replace('.', '').replace(',', '.');
-    				  	 let restante04 			= parseFloat(total_restante03.replace(',', '.')) - parseInt(total_pgto03);
-                      	 document.getElementById("total_restante04").value = parseFloat(restante04).toFixed(2).replace(".", ",");
-                      	 
-                      	 let datap03 = data_brasileira03;
-                      	 
-                      	 let forma03 = result03.nparcelas;
-                      	 let parcela03 = parseInt(total_pgto03)/parseInt(forma03);
-                      	
-                         	for (i = 1; i <= forma03; i++) {		
-							 
-                    		 document.getElementById("parcelas_03").innerHTML += "[ " + i + " ] R$ " + parseFloat(parcela03).toFixed(2).replace(".", ",") + " - " + datap03 + " | ";
-                    			var datainicial03 = datap03;
-                                var dias = 1;
-                                var partes = datainicial03.split("/");
-                                var ano = partes[2];
-                                var mes = partes[1]-1;
-                                var dia = partes[0];
-                                
-                                datainicial03 = new Date(ano,mes,dia);
-                                datafinal03 = new Date(datainicial03);
-                                datafinal03.setMonth(datainicial03.getMonth()+1);
-                                
-                                var dd = ("0" + datafinal03.getDate()).slice(-2);
-                                var mm = ("0" + (datafinal03.getMonth()+1)).slice(-2);
-                                var y = datafinal03.getFullYear();
-                                
-                                var dataformatada03 = dd + '/' + mm + '/' + y;
-                                datap03 = dataformatada03;
- 							   // criar um if para descartar feriados e finais de semana
-                    		}
-                      	 
-                      	 
-                      	 $("#pagamento_04").show();
-    				}
-    				
-    				let selFormaPagamento03 = result03.id_forma_pagamento;
-    				
-
-    				let nParcelas03 = document.querySelector('#nvezes03');
-    				$.ajax({
-        			url: '<?php echo URL_BASE ?>app/views/orcamento/controller/pedidosformapagamento.php',  
-        			type: 'POST',
-        			dataType: 'json',
-        			data: {formadepagamento:selFormaPagamento03},
-        			success: function(resultado03){
-					let maxParcelas03 = resultado03.parcela_max;  
-					let obrigatorio03 = resultado03.obrigatorio; 
- 
-              		if(obrigatorio03 == "a"){
-              		$("#anexo03").show(); 
-              		$("#proposta03").hide(); 
-              		}
-              		
-              		if(obrigatorio03 == "n"){
-              		$("#anexo03").hide(); 
-              		$("#proposta03").show(); 
-              		} 
-              				         		
-              		nParcelas03.options.length = 0;
-                   for (let i = 0; i<maxParcelas03; i++){
-                        let opt = document.createElement('option');
-                        opt.value = i+1;
-                        opt.innerHTML = i+1;
-                        nParcelas03.appendChild(opt);
-                        $("#nvezes03").val(vezez_escolhidas03);
-                    }
-                    nParcelas03.removeAttribute('disabled'); 
-
-    				console.log(resultado03);
-    			}
-			});
-
-    				console.log(result03);
-    			}
-			});
-			
-			// colocar numero de vezes, taxa e arquivo
-			if(document.querySelector('#forma_pagamento03')){	
+            if(document.querySelector('#forma_pagamento03')){	
                 	
               	let selFormaPagamento = document.querySelector('#forma_pagamento03');
               	let nParcelas = document.querySelector('#nvezes03');
@@ -509,7 +222,7 @@ $_SESSION['random'] = rand(0,10000000);
               			body:`formadepagamento=${selFormaPagamento.value}`
               		});
               		let ress = await reqs.json();
-              		let maxParcelas = ress.parcela_max;   
+              		let maxParcelas = ress.parcela_max; 
               		
               		let obrigatorio = ress.obrigatorio;  
               		if(obrigatorio == "a"){
@@ -521,8 +234,9 @@ $_SESSION['random'] = rand(0,10000000);
               		$("#anexo03").hide(); 
               		$("#proposta03").show(); 
               		}
-              		
-              		document.getElementById('taxa03').value = ress.taxa;           		
+              		  
+              		document.getElementById('taxa03').value = ress.taxa;  
+              		document.getElementById('tipo_pgto03').innerHTML = ress.forma;		         		
               		nParcelas.options.length = 0;
                    for (let i = 0; i<maxParcelas; i++){
                         let opt = document.createElement('option');
@@ -534,124 +248,7 @@ $_SESSION['random'] = rand(0,10000000);
               	});
             }
             
-            
-            
-            //pagamento 04
-            
-            $.ajax({
-    			url: '<?php echo URL_BASE ?>app/views/orcamento/controller/pedidospagamentos.php',  
-    			type: 'POST',
-    			dataType: 'json',
-    			data: {id:idPedido, id_forma: 4},
-    			success: function(result04){
-    				let res = result04.primeiro;
-    				$("#id_pedido_pagamento04").val(result04.id_pedido_pagamento);
-    				$("#forma_pagamento04").val(result04.id_forma_pagamento);
-    				$("#banco_pagamento04").val(result04.id_banco);
-    				var vezez_escolhidas04 = result04.nparcelas;
-    				if(result04.valor_apagar){
-    				let vpagar04 = result04.valor_apagar;
-    				$("#valor_pgto04").val(parseFloat(vpagar04).toFixed(2).replace(".", ","));
-    				}
-    				;
-    				$("#taxa04").val(result04.taxa); 
-    				if(result04.data_pagamento){
-    				let data_ing04 = result04.data_pagamento;
-    				
-    				var data_brasileira04 = data_ing04.split('-').reverse().join('/');
-    				
-    				$("#primeira_parcela04").val(data_brasileira04);
-					}
-					var anexo04 = result04.anexo;
-    				$("#arquivoanexo04").val(anexo04);
-    				if(anexo04) {
-    				$("#anexo04ver").show(); 
-    				}
-
-    				if(result04.id_pedido_pagamento){  
-
-    				 	 let total_pgto04str 		= document.querySelector('#valor_pgto04').value;
-                      	 const total_restante04str 	= $("#total_restante04").val();                      
-                         let total_pgto04 			= total_pgto04str.replace('.', '').replace(',', '.');
-                         let total_restante04 		= total_restante04str.replace('.', '').replace(',', '.');
-    				  	 let restante05 			= parseFloat(total_restante04.replace(',', '.')) - parseInt(total_pgto04);
-                      	 document.getElementById("total_restante05").value = parseFloat(restante05).toFixed(2).replace(".", ",");
-                      	 
-                      	 let datap04 = data_brasileira04;
-                      	 
-                      	 let forma04 = result04.nparcelas;
-                      	 let parcela04 = parseInt(total_pgto04)/parseInt(forma04);
-                      	
-                         	for (i = 1; i <= forma04; i++) {		
-							 
-                    		 document.getElementById("parcelas_04").innerHTML += "[ " + i + " ] R$ " + parseFloat(parcela04).toFixed(2).replace(".", ",") + " - " + datap04 + " | ";
-                    			var datainicial04 = datap04;
-                                var dias = 1;
-                                var partes = datainicial04.split("/");
-                                var ano = partes[2];
-                                var mes = partes[1]-1;
-                                var dia = partes[0];
-                                
-                                datainicial04 = new Date(ano,mes,dia);
-                                datafinal04 = new Date(datainicial04);
-                                datafinal04.setMonth(datainicial04.getMonth()+1);
-                                
-                                var dd = ("0" + datafinal04.getDate()).slice(-2);
-                                var mm = ("0" + (datafinal04.getMonth()+1)).slice(-2);
-                                var y = datafinal04.getFullYear();
-                                
-                                var dataformatada04 = dd + '/' + mm + '/' + y;
-                                datap04 = dataformatada04;
- 							   // criar um if para descartar feriados e finais de semana
-                    		}
-                      	 
-                      	 
-                      	 $("#pagamento_05").show();
-    				}
-    				
-    				let selFormaPagamento04 = result04.id_forma_pagamento;
-    				
-
-    				let nParcelas04 = document.querySelector('#nvezes04');
-    				$.ajax({
-        			url: '<?php echo URL_BASE ?>app/views/orcamento/controller/pedidosformapagamento.php',  
-        			type: 'POST',
-        			dataType: 'json',
-        			data: {formadepagamento:selFormaPagamento04},
-        			success: function(resultado04){
-					let maxParcelas04 = resultado04.parcela_max;  
-					let obrigatorio04 = resultado04.obrigatorio; 
- 
-              		if(obrigatorio04 == "a"){
-              		$("#anexo04").show(); 
-              		$("#proposta04").hide(); 
-              		}
-              		
-              		if(obrigatorio04 == "n"){
-              		$("#anexo04").hide(); 
-              		$("#proposta04").show(); 
-              		} 
-              				         		
-              		nParcelas04.options.length = 0;
-                   for (let i = 0; i<maxParcelas04; i++){
-                        let opt = document.createElement('option');
-                        opt.value = i+1;
-                        opt.innerHTML = i+1;
-                        nParcelas04.appendChild(opt);
-                        $("#nvezes04").val(vezez_escolhidas04);
-                    }
-                    nParcelas04.removeAttribute('disabled'); 
-
-    				console.log(resultado04);
-    			}
-			});
-
-    				console.log(result04);
-    			}
-			});
-			
-			// colocar numero de vezes, taxa e arquivo
-			if(document.querySelector('#forma_pagamento04')){	
+            if(document.querySelector('#forma_pagamento04')){	
                 	
               	let selFormaPagamento = document.querySelector('#forma_pagamento04');
               	let nParcelas = document.querySelector('#nvezes04');
@@ -677,7 +274,8 @@ $_SESSION['random'] = rand(0,10000000);
               		$("#proposta04").show(); 
               		}
               		
-              		document.getElementById('taxa04').value = ress.taxa;           		
+              		document.getElementById('taxa04').value = ress.taxa;  
+              		document.getElementById('tipo_pgto04').innerHTML = ress.forma;		         		
               		nParcelas.options.length = 0;
                    for (let i = 0; i<maxParcelas; i++){
                         let opt = document.createElement('option');
@@ -689,120 +287,7 @@ $_SESSION['random'] = rand(0,10000000);
               	});
             }
             
-            
-            
-            // pagamento 05
-            
-            $.ajax({
-    			url: '<?php echo URL_BASE ?>app/views/orcamento/controller/pedidospagamentos.php',  
-    			type: 'POST',
-    			dataType: 'json',
-    			data: {id:idPedido, id_forma: 5},
-    			success: function(result05){
-    				let res = result05.primeiro;
-    				$("#id_pedido_pagamento05").val(result05.id_pedido_pagamento);
-    				$("#forma_pagamento05").val(result05.id_forma_pagamento);
-    				$("#banco_pagamento05").val(result05.id_banco);
-    				var vezez_escolhidas05 = result05.nparcelas;
-    				if(result05.valor_apagar){
-    				let vpagar05 = result05.valor_apagar;
-    				$("#valor_pgto05").val(parseFloat(vpagar05).toFixed(2).replace(".", ","));
-    				}
-    				;
-    				$("#taxa05").val(result05.taxa); 
-    				if(result05.data_pagamento){
-    				let data_ing05 = result05.data_pagamento;
-    				
-    				var data_brasileira05 = data_ing05.split('-').reverse().join('/');
-    				
-    				$("#primeira_parcela05").val(data_brasileira05);
-					}
-					var anexo05 = result05.anexo;
-    				$("#arquivoanexo05").val(anexo05);
-    				if(anexo05) {
-    				$("#anexo05ver").show(); 
-    				}
-
-    				if(result05.id_pedido_pagamento){  
-
-    				 	 let total_pgto05str 		= document.querySelector('#valor_pgto05').value;
-                      	 let total_restante05str 	= document.getElementById("total_restante05").value;                     
-                         let total_pgto05 			= total_pgto05str.replace('.', '').replace(',', '.');
-                         let total_restante05 		= total_restante05str.replace('.', '').replace(',', '.');
-                      	 
-                      	 let datap05 = data_brasileira05;
-                      	 
-                      	 let forma05 = result05.nparcelas;
-                      	 let parcela05 = parseInt(total_pgto05)/parseInt(forma05);
-                      	
-                         	for (i = 1; i <= forma05; i++) {		
-							 
-                    		 document.getElementById("parcelas_05").innerHTML += "[ " + i + " ] R$ " + parseFloat(parcela05).toFixed(2).replace(".", ",") + " - " + datap05 + " | ";
-                    			var datainicial05 = datap05;
-                                var dias = 1;
-                                var partes = datainicial05.split("/");
-                                var ano = partes[2];
-                                var mes = partes[1]-1;
-                                var dia = partes[0];
-                                
-                                datainicial05 = new Date(ano,mes,dia);
-                                datafinal05 = new Date(datainicial05);
-                                datafinal05.setMonth(datainicial05.getMonth()+1);
-                                
-                                var dd = ("0" + datafinal05.getDate()).slice(-2);
-                                var mm = ("0" + (datafinal05.getMonth()+1)).slice(-2);
-                                var y = datafinal05.getFullYear();
-                                
-                                var dataformatada05 = dd + '/' + mm + '/' + y;
-                                datap05 = dataformatada05;
- 							   // criar um if para descartar feriados e finais de semana
-                    		}
-
-    				}
-    				
-    				let selFormaPagamento05 = result05.id_forma_pagamento;
-    				
-
-    				let nParcelas05 = document.querySelector('#nvezes05');
-    				$.ajax({
-        			url: '<?php echo URL_BASE ?>app/views/orcamento/controller/pedidosformapagamento.php',  
-        			type: 'POST',
-        			dataType: 'json',
-        			data: {formadepagamento:selFormaPagamento05},
-        			success: function(resultado05){
-					let maxParcelas05 = resultado05.parcela_max;  
-					let obrigatorio05 = resultado05.obrigatorio; 
- 
-              		if(obrigatorio05 == "a"){
-              		$("#anexo05").show(); 
-              		$("#proposta05").hide(); 
-              		}
-              		
-              		if(obrigatorio05 == "n"){
-              		$("#anexo05").hide(); 
-              		$("#proposta05").show(); 
-              		} 
-              				         		
-              		nParcelas05.options.length = 0;
-                   for (let i = 0; i<maxParcelas05; i++){
-                        let opt = document.createElement('option');
-                        opt.value = i+1;
-                        opt.innerHTML = i+1;
-                        nParcelas05.appendChild(opt);
-                        $("#nvezes05").val(vezez_escolhidas05);
-                    }
-                    nParcelas05.removeAttribute('disabled'); 
-
-    				console.log(resultado05);
-    			}
-			});
-
-    				console.log(result05);
-    			}
-			});
-			
-			// colocar numero de vezes, taxa e arquivo
-			if(document.querySelector('#forma_pagamento05')){	
+            if(document.querySelector('#forma_pagamento05')){	
                 	
               	let selFormaPagamento = document.querySelector('#forma_pagamento05');
               	let nParcelas = document.querySelector('#nvezes05');
@@ -828,7 +313,8 @@ $_SESSION['random'] = rand(0,10000000);
               		$("#proposta05").show(); 
               		}
               		
-              		document.getElementById('taxa05').value = ress.taxa;           		
+              		document.getElementById('taxa05').value = ress.taxa;  
+              		document.getElementById('tipo_pgto05').innerHTML = ress.forma;		         		
               		nParcelas.options.length = 0;
                    for (let i = 0; i<maxParcelas; i++){
                         let opt = document.createElement('option');
@@ -839,8 +325,8 @@ $_SESSION['random'] = rand(0,10000000);
                     nParcelas.removeAttribute('disabled');          
               	});
             }
-            
-      }
+      }      
+      
       
       
   </script>
@@ -1439,7 +925,7 @@ $_SESSION['random'] = rand(0,10000000);
                                         background: #eee;
                                     }
                        
-                      </style>    
+                           		</style>    
 					  			<script type="text/javascript">
     					  			$(function(){
                                		$("#nome_comprador").on("keyup", function(){
@@ -2064,174 +1550,11 @@ $_SESSION['random'] = rand(0,10000000);
                        <small id="mensagem_comprador" style="color:#FF0000;text-align:left"></small>
                        </div>
                        
-                        <!– TRANSPORTADORA –>
-                        
-                        <style type="text/css">
-								.listaFornecedor{
-                                        text-align:left;
-                                    	position:absolute;
-                                    	left:15px;
-                                    	right:10px;
-                                    	top:55px;
-                                    	border: solid 1px #ccc;
-                                        background: #fff;
-                                    	border-radius:0 0 5px 5px;
-                                    	z-index:1
-                                    }
-                                     .listaFornecedor a {
-                                        display: block;
-                                        text-transform: uppercase;
-                                        letter-spacing: 1px;
-                                        font-size: .9em;
-                                        line-height: 23px;
-                                        padding: 6px;
-                                    	color: #7d8e94;
-                                    }
-                                     
-                                    .listaFornecedor a:hover {
-                                        background: #eee;
-                                    }
-                       
-                        </style>    
-                       			<script type="text/javascript">
-                           		$(function(){
-                           		$("#nomefornecedor").on("keyup", function(){
-                           		
-                            	var q  = $(this).val();
-                            	if(q == ""){
-                            		$(".listaFornecedor").hide();
-                            		return;
-                            	}
-                            	
-                            	$.ajax({
-                            	  url: base_url + "orcamento/buscar/" +q ,
-                            	  type: "GET",
-                            	  dataType: "json",
-                            	  data:{},
-                            	  success: function (data){
-                            		  $("#nomefornecedor").after('<div class="listaFornecedor"></div>');
-                            	   html = "";
-                            		for (u = 0; u < data.length; u++) {		  
-                            		  html +='<div class="sif"><a href="javascript:;" onclick="selecionarFornecedor(this)"'
-                            		  + 'data-idf="' + data[u].id_fornecedor +
-                            		   '" data-nomef="' + data[u].nome_fornecedor + '" data-celularf="' + data[u].celular_fornecedor + '" data-contatof="' + data[u].contato_fornecedor +'" data-emailf="' + data[u].email_fornecedor +'">' +
-                            		  data[u].nome_fornecedor + '</a></div>';
-                            		  
-                            		}
-                            		$(".listaFornecedor").html(html);
-                                    $(".listaFornecedor").show();
-                            	  }
-                                   });
-                                	
-                                   }) ;
-                                });
-                                function selecionarFornecedor(obj){
-                                	var id = $(obj).attr("data-idf");
-                                	var nome = $(obj).attr("data-nomef");
-                                	var celular = $(obj).attr("data-celularf");
-                                	var email = $(obj).attr("data-emailf");
-                                	var contato = $(obj).attr("data-contatof");
-                                	
-                                	let valorfretefinal = 
-                                	
-                                	$(".listaFornecedor").hide();
-                                	$("#nomefornecedor").val(nome);
-                                	$("#celular_fornecedor").val(celular);
-                                	$("#email_fornecedor").val(email);
-                                	$("#contato_fornecedor").val(contato);
-                                	$("#id_fornecedor").val(id);           	
-                                };
-                           		</script>
-                           		
-                         <div class="row g-2" id="escolher_transportadora">   
-                           		
-                        <div class="col-md-3 mb-3">
-                        <span><small>TRANSPORTADORA</small></span>
-                        <input type="hidden" name="id_fornecedor" id="id_fornecedor"  value="<?php echo $orcamento_pedido->id_transportadora; ?>">
-                        <input  class="form-control" name="nomefornecedor" id="nomefornecedor" type="text" value="<?php echo $orcamento_pedido->nome_fornecedor; ?>" autocomplete="off" placeholder="Nome da Transportadora" required="required">
-                        </div>
-                        <div class="col-md-1 mb-3">
-                        <span><small>TIPO DE FRETE</small></span>
-                        <select class="form-select" name="id_tipo_frete" id="id_tipo_frete">
-                          <option value="" "selected">Escolha</option>
-                          <?php foreach ($tipofrete as $fretes){
-                              $selecionado = ($fretes->id_tipo_frete == $orcamento_pedido->id_tipo_frete) ? "selected" :"";
-            					echo "<option value='$fretes->id_tipo_frete'>$fretes->tipo_frete</option>";
-            			  }?> 
-                        </select>
-                      </div>
-                      <div class="col-md-1 mb-3">
-                        <span><small>CONTATO</small></span>
-                        <input type="text" name="contato_fornecedor" id="contato_fornecedor"  value="<?php echo $orcamento_pedido->contato_fornecedor; ?>"    class="form-control">
-                        </div>
-                      <div class="col-md-1 mb-3">
-                        <span><small>TELEFONE</small></span>
-                        <input type="text" name="celular_fornecedor" id="celular_fornecedor"  value="<?php echo $orcamento_pedido->celular_fornecedor; ?>"    class="form-control">
-                      </div>
-                      <div class="col-md-3 mb-3">
-                        <span><small>EMAIL</small></span>
-                        <input type="text" name="email_fornecedor" id="email_fornecedor"  value="<?php echo $orcamento_pedido->email_fornecedor; ?>"    class="form-control">
-                      </div>
-                      <div class="col-md-1 mb-3">
-                        <span><small>VALOR DO FRETE </small></span>
-                       <input type="text" name="valor_frete_final" id="valor_frete_final"  value="<?php echo number_format($orcamento_pedido->frete,2,",","."); ?>"    class="form-control">
-                       </div>
-                      <div class="col-md-1 mb-3">
-                        <span><small>PRAZO DE ENTREGA</small></span>
-                        <input type="text" name="data_entrega_prevista" id="data_entrega_prevista" autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="<?php echo $orcamento_pedido->data_entrega_prevista; ?>">
-				      </div>
-                       <script>
-                       function atualizarTrans(obj){
-                       		
-                       		var id_transportadora 		= $("#id_fornecedor").val();
-                       		
-                   			var id_tipo_frete 			= $("#id_tipo_frete").val();
-                   			let data_entrega_prevista 	= $("#data_entrega_prevista").val();
-                            var id_pedido				= $("#id_pedido").html();
-                            
-                            
-                       
-                       			$.ajax({
-                    				url: base_url + "orcamento/atualizarTransportadora/" + id_pedido,  
-                    				type: "POST",
-                    				data: { id_pedido: id_pedido, id_transportadora: id_transportadora , id_tipo_frete: id_tipo_frete, data_entrega_prevista: data_entrega_prevista },
-                    				dataType: "json",
-                    				success: function(data){
-                    				alert(id_pedido);
-                    				}
-                    			});
-
-                    	}
-                       </script>
-                       <div class="col-md-1 mb-3">
-                       <p Style="text-align:center; padding-top:30px" onclick="atualizarTrans(this);"><i data-feather="save" Style="color:#008000"></i></p>
-                       </div>
-                       <small id="mensagem_comprador" style="color:#FF0000;text-align:left"></small>
-                       </div>
-                       
-                       </div>
-                       
                         <!– forma de pagamento –>
                         
                         <style>
                         
                         #anexo01ver {
-                        display: none;
-                        }
-                        
-                         #anexo02ver {
-                        display: none;
-                        }
-                        
-                        #anexo03ver {
-                        display: none;
-                        }
-                        
-                        #anexo04ver {
-                        display: none;
-                        }
-                        
-                        #anexo05ver {
                         display: none;
                         }
                         
@@ -2305,7 +1628,7 @@ $_SESSION['random'] = rand(0,10000000);
                         
                         <div class="col-md-1 mb-3">
                         <span><small>VALOR PEDIDO</small></span>
-                        <input readonly type="texto" name="total_somado" id="total_somado"  value="<?php echo number_format($orcamento_pedido->total_somado,2,",","."); ?>"    class="form-control"> 
+                        <h5 id="total_somado"><?php echo number_format($orcamento_pedido->total_somado,2,",","."); ?></h5>
                       	</div>
  
                        	<div class="col-md-2 mb-3">
@@ -2347,7 +1670,7 @@ $_SESSION['random'] = rand(0,10000000);
                       
                       <div class="col-md-1 mb-3">
                         <span><small>PRIMEIRA PARCELA</small></span>
-                        <input type="text" name="primeira_parcela01" id="primeira_parcela01" autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="">
+                        <input type="text" name="primeira_parcela01" id="primeira_parcela01" autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="<?php echo $orcamento_pedido->primeira_parcela01; ?>">
                       </div>
                      	<script>
                       	function mostrarparcelas01(obj){
@@ -2373,7 +1696,7 @@ $_SESSION['random'] = rand(0,10000000);
                          };
                       	                      
                       	 let total_pgto01str = document.querySelector('#valor_pgto01').value;
-                      	 let total_somadostr = $("#total_somado").val();
+                      	 let total_somadostr = $("#total_somado").html();
                       	                          
                          let total_pgto01 	= total_pgto01str.replace('.', '').replace(',', '.');
                          let total_somado 	= total_somadostr.replace('.', '').replace(',', '.');
@@ -2408,14 +1731,11 @@ $_SESSION['random'] = rand(0,10000000);
                                 return false; 
                          };
                          
-                          if(!$('input[name="anexo01arquivo"]').val() && (!$("#arquivoanexo01").val())){
+                          if(!$('input[name="anexo01arquivo"]').val()){
                                 alert("Anexar arquivo");
-                                document.querySelector('input[name="anexo01arquivo"]').style.borderColor='red';
-                                setTimeout(()=>{
-                                  document.querySelector('input[name="anexo01arquivo"]').style.borderColor='#ccc';
-                                },6000);
-                                return false; 
+                                 return false; 
                          };
+                   
                          
                          let parcela01 = parseInt(total_pgto01)/parseInt(forma01);
                          //alert(parseFloat(parcela01).toFixed(2).replace(".", ","));
@@ -2443,11 +1763,11 @@ $_SESSION['random'] = rand(0,10000000);
                                 datap01 = dataformatada;
  							   // criar um if para descartar feriados e finais de semana
  							   
- 							   let restante02 = parseFloat(total_somado.replace(',', '.')) - parseInt(total_pgto01);
+ 							   var restante02 = parseFloat(total_somado.replace(',', '.')) - parseInt(total_pgto01);
  							   
                     		}
                     		//alert(restante02);
-                    		document.getElementById("total_restante02").value = parseFloat(restante02).toFixed(2).replace(".", ",");
+                    		document.getElementById("total_restante02").innerHTML = parseFloat(restante02).toFixed(2).replace(".", ",");
                     		
                     		//gravar no bd
                     		
@@ -2464,41 +1784,30 @@ $_SESSION['random'] = rand(0,10000000);
 							let id_pedido 			= $("#id_pedido").html();
 							let id_forma 			= 1;
 							
-							if($('input[name="anexo01arquivo"]').val()){
 							var  _nomeArquivo		= document.getElementById("anexo01arquivo");
-							var nomeArquivo			= _nomeArquivo.files[0].name; 
-							var  extensao			= nomeArquivo.split(".").pop();
-							let rand				= Math.floor(Math.random() * 100);
-							//alert(extensao);
-							var  anexo01				= "comprovante_" + id_pedido + "_" + id_pedido_pagamento + "_" +  id_forma + rand + "_" + "." + extensao; 
-							//alert(anexo01);
-							$("#nome_arquivo").val(anexo01);
-							} else {
-							var  anexo01 = $("#arquivoanexo01").val();
-							}
+							var  anexo				= _nomeArquivo.files[0].name; 
+							
+							
                           
-                          	//alert(anexo);
     						
     						//inserir forma de pgto
                             		$.ajax({
                         				url: base_url + "orcamento/CadastrarAtualizarPagamento/" + id_pedido,  
                         				type: "POST",
-                        				data: { id_pedido_pagamento:id_pedido_pagamento, data_pagamento: data_pagamento, id_forma_pagamento: id_forma_pagamento, id_banco: id_banco, parcela: parcela, nparcelas: nparcelas, valor_pedido: valor_pedido, valor_parcial: valor_parcial, valor_apagar: valor_apagar, taxa: taxa, id_pedido: id_pedido, id_forma: id_forma, anexo: anexo01},
+                        				data: { id_pedido_pagamento:id_pedido_pagamento, data_pagamento: data_pagamento, id_forma_pagamento: id_forma_pagamento, id_banco: id_banco, parcela: parcela, nparcelas: nparcelas, valor_pedido: valor_pedido, valor_parcial: valor_parcial, valor_apagar: valor_apagar, taxa: taxa, id_pedido: id_pedido, id_forma: id_forma, anexo: anexo},
                         				dataType: "json",
                         				success: function(data){
                         				}
                         			});
-                        			if($('input[name="anexo01arquivo"]').val()){
- 									envia_arquivo1(id_pedido);
-                         			}
                         			
+                        			envia_arquivo1(id_pedido)
                         			
                         	if(parseFloat(total_pgto01.replace(',', '.')) != parseFloat(total_somado.replace(',', '.')) && parseFloat(total_pgto01.replace(',', '.')) < parseFloat(total_somado.replace(',', '.')) && primeira_parcela01 != ""){
                               $("#pagamento_02").fadeIn(1000);  
                              } else { 
                              $("#pagamento_02").hide();  
                              }
-							 document.location.reload(true);
+
 						}
 						
 						//enviar arquivo
@@ -2522,9 +1831,7 @@ $_SESSION['random'] = rand(0,10000000);
                        
                        <div class="col-md-1 mb-3" id="anexo01">
                        <span><small>Anexo</small></span>
-                       <input  name="anexo01arquivo" id="anexo01arquivo" class="form-control" type="file"> 
-                       <input  name="anexo01arquivo01" id="anexo01arquivo01" class="form-control" type="hidden">     
-                       <input  name="nome_arquivo" id="nome_arquivo" class="form-control" type="hidden">  
+                       <input  name="anexo01arquivo" id="anexo01arquivo" class="form-control" type="file">    
                        </div>
                         <script>
                                   function myFunc(){
@@ -2532,7 +1839,7 @@ $_SESSION['random'] = rand(0,10000000);
                                     window.open('<?php echo URL_BASE ?>app/upload/' + arquivoanexo01, '_blank')
                                   }
                                </script>
-                       <input type="hidden" name="arquivoanexo01" id="arquivoanexo01"  value=""    class="form-control">
+                               <input type="hidden" name="arquivoanexo01" id="arquivoanexo01"  value=""    class="form-control">
                        <div class="col-md-1 mb-3" id="anexo01ver">
                        <button style="margin-left:5px;margin-top:25px" class="btn btn-secondary btn-xs" onclick="myFunc()"><i data-feather="paperclip"></i></button>  
                        </div>
@@ -2542,32 +1849,8 @@ $_SESSION['random'] = rand(0,10000000);
                         <input type="text" name="nproposta01" id="nproposta01"  value=""    class="form-control">
                        </div>
                        
-                       <script>
-                       function excluirparcelas01(){
-                       		
-                       		var resposta = confirm("Deseja remover esse registro?");
-                             if (resposta == true) {
-
-                             
-                       		
-                       		let id_pedido 			= $("#id_pedido").html();
-							let id_forma 			= 1;
-                       
-                       $.ajax({
-                        	url: base_url + "orcamento/ExcluitPagamento/" + id_pedido,  
-                        	type: "POST",
-                        	data: { id_pedido: id_pedido, id_forma: id_forma },
-                        	dataType: "json",
-                        	success: function(data){
-                        	}
-                       });
-                       document.location.reload(true);
-                       }
-                       }
-                       </script>
-                       
                        <div class="col-md-1 mb-3">
-                       <p Style="text-align:center; padding-top:25px"><i data-feather="save" Style="color:#008000" onclick="mostrarparcelas01(this);"></i> <i data-feather="trash-2" Style="color:#FF0000;margin-left:20px" onclick="excluirparcelas01(this);"></i></p>
+                       <p Style="text-align:center; padding-top:30px" onclick="mostrarparcelas01(this);"><i data-feather="save" Style="color:#008000"></i></p>
                        </div>
                       
                        <span id="parcelas_01"> PARCELAS </span>
@@ -2582,12 +1865,11 @@ $_SESSION['random'] = rand(0,10000000);
                         
                          <div class="col-md-1 mb-3">
                         <span><small>VALOR RESTANTE</small></span>
-                          <input readonly type="texto" name="total_restante02" id="total_restante02"  value=""    class="form-control"> 
+                        <h5 id="total_restante02"><?php echo number_format($orcamento_pedido->total_restante02,2,",","."); ?></h5>
                       	</div>
 
                         <div class="col-md-2 mb-3">
                         <span><small><b>TIPO DE PAGAMENTO 02</b></small></span>
-                        <input type="hidden" name="id_pedido_pagamento02" id="id_pedido_pagamento02"  value=""    class="form-control"> 
 						 <div class="mb-2">
 						 
                         <select class="form-select" name="forma_pagamento02" id="forma_pagamento02">
@@ -2614,8 +1896,8 @@ $_SESSION['random'] = rand(0,10000000);
                       	</div>                       
                         </div>
 
-                       <div class="col-md-1 mb-3">
-                        <span><small>VALOR </small></span>
+                       <div class="col-md-2 mb-3">
+                        <span><small>VALOR <span id="tipo_pgto02"></span></small></span>
                         <input type="text" name="valor_pgto02" id="valor_pgto02"  value="<?php echo $orcamento_pedido->valor_pgto02; ?>"    class="form-control mascara-dinheiro"> 
                       </div>
                       
@@ -2626,11 +1908,10 @@ $_SESSION['random'] = rand(0,10000000);
                       
                       <div class="col-md-1 mb-3">
                         <span><small>PRIMEIRA PARCELA</small></span>
-                        <input type="text" name="primeira_parcela02"  id="primeira_parcela02"  autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="<?php echo $orcamento_pedido->primeira_parcela02; ?>">
+                        <input type="text" name="primeira_parcela02"  autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="<?php echo $orcamento_pedido->primeira_parcela02; ?>">
                       </div>
                      	<script>
                       	function mostrarparcelas02(obj){
-                      	
                       	 var forma02 = $('#nvezes02 :selected').text(); //
                       	 document.getElementById("parcelas_02").innerHTML = "";
                       	 
@@ -2643,23 +1924,12 @@ $_SESSION['random'] = rand(0,10000000);
                                 return false; 
                          };
                          
-                          if (($("#banco_pagamento02").val() == "")||($("#banco_pagamento02").val()  == null)) {
-                                alert("Escolha um banco");
-                                document.querySelector("#banco_pagamento02").style.borderColor='red';
-                                setTimeout(()=>{
-                                  document.querySelector("#banco_pagamento02").style.borderColor='#ccc';
-                                },6000);
-                                return false; 
-                         };
-                      	                      
-                      	 let total_pgto02str = document.querySelector('#valor_pgto02').value;
-                      	 const total_restante02str = document.querySelector('#total_restante02').value;
+                         let total_pgto02str = document.querySelector('#valor_pgto02').value;
+                      	 let total_restante02str = $("#total_restante02").html();
                       	                          
-                         let total_pgto02 		= total_pgto02str.replace('.', '').replace(',', '.');
-                         //alert(total_pgto02);
+                         let total_pgto02 	= total_pgto02str.replace('.', '').replace(',', '.');
                          let total_restante02 	= total_restante02str.replace('.', '').replace(',', '.');
-                        
-                         
+
                          if ((total_pgto02 == "") || (total_pgto02 == null) ||(total_pgto02 == 0)) {
                                 alert("Coloque o valor a ser pago nesse formato");
                                 document.querySelector('input[name="valor_pgto02"]').style.borderColor='red';
@@ -2669,9 +1939,15 @@ $_SESSION['random'] = rand(0,10000000);
                                 return false; 
                          };
                          
-                          var primeira_parcela02 = document.querySelector('input[name="primeira_parcela02"]').value;
+                         var primeira_parcela02 = document.querySelector('input[name="primeira_parcela02"]').value;
                          
-                         if(parseInt(total_pgto02) > total_somado){
+                         if(parseFloat(total_pgto02.replace(',', '.')) != parseFloat(total_restante02.replace(',', '.')) && parseFloat(total_pgto02.replace(',', '.')) < parseFloat(total_restante02.replace(',', '.')) && primeira_parcela02 != ""){
+                         $("#pagamento_03").fadeIn(1000);  
+                         } else { 
+                         $("#pagamento_03").hide();  
+                         }
+                         
+                         if(parseInt(total_pgto02) > parseInt(total_restante02)){
                          alert("Valor do pagamento não pode ser maior que o total");
                          document.querySelector('input[name="valor_pgto02"]').style.borderColor='red';
                          setTimeout(()=>{ 
@@ -2690,22 +1966,10 @@ $_SESSION['random'] = rand(0,10000000);
                                 return false; 
                          };
                          
-                         //alert($("#arquivoanexo02").val());
-                         
-                          if(!$('input[name="anexo02arquivo"]').val() && (!$("#arquivoanexo02").val())){
-                                alert("Anexar arquivo");
-                                document.querySelector('input[name="anexo02arquivo"]').style.borderColor='red';
-                                setTimeout(()=>{
-                                  document.querySelector('input[name="anexo02arquivo"]').style.borderColor='#ccc';
-                                },6000);
-                                return false; 
-                         };
-                        
                          let parcela02 = parseInt(total_pgto02)/parseInt(forma02);
                          //alert(parseFloat(parcela02).toFixed(2).replace(".", ","));
                          
                          let datap02 = primeira_parcela02;
-                         
                          	for (i = 1; i <= forma02; i++) {		
 							 
                     		 document.getElementById("parcelas_02").innerHTML += "[ " + i + " ] R$ " + parseFloat(parcela02).toFixed(2).replace(".", ",") + " - " + datap02 + " | ";
@@ -2715,8 +1979,6 @@ $_SESSION['random'] = rand(0,10000000);
                                 var ano = partes[2];
                                 var mes = partes[1]-1;
                                 var dia = partes[0];
-                                
-                                
                                 
                                 datainicial = new Date(ano,mes,dia);
                                 datafinal = new Date(datainicial);
@@ -2728,75 +1990,12 @@ $_SESSION['random'] = rand(0,10000000);
                                 
                                 var dataformatada = dd + '/' + mm + '/' + y;
                                 datap02 = dataformatada;
-                                
  							   // criar um if para descartar feriados e finais de semana
+ 							   
+ 							   var restante03 = parseFloat(total_restante02.replace(',', '.')) - parseInt(total_pgto02);
+ 							   
+ 							   document.getElementById("total_restante03").innerHTML = parseFloat(restante03).toFixed(2).replace(".", ",");
                     		}
-                    		
-                    		let restante03 = parseFloat(total_restante02.replace(',', '.')) - parseInt(total_pgto02);
-                    		document.getElementById("total_restante03").value = parseFloat(restante03).toFixed(2).replace(".", ",");
-                    		
-
-                    		
-                    		//gravar no bd
-                    		
-                    		let id_pedido_pagamento	= $("#id_pedido_pagamento02").val();
-                    		let data_pagamento 		= $("#primeira_parcela02").val();
-                    		let id_forma_pagamento 	= $("#forma_pagamento02").val();
-                    		let id_banco 			= $("#banco_pagamento02").val();
-                    		let parcela 			= 1;
-                    		let nparcelas 			= $("#nvezes02").val();
-                    		let valorTotal			= $("#total_somado").val();
-                    		let valor_pedido		= valorTotal.replace('.', '').replace(',', '.');
-    						let valor_parcial		= total_restante02;
-    						let valor_apagar		= $("#valor_pgto02").val();
-    						let taxa	 			= $("#taxa02").val();
-							let id_pedido 			= $("#id_pedido").html();
-							let id_forma 			= 2;
-							
-							if($('input[name="anexo02arquivo"]').val()){
-							var  _nomeArquivo		= document.getElementById("anexo02arquivo");
-							var nomeArquivo			= _nomeArquivo.files[0].name; 
-							var  extensao			= nomeArquivo.split(".").pop();
-							let rand				= Math.floor(Math.random() * 100);
-							//alert(extensao);
-							var  anexo02				= "comprovante_" + id_pedido + "_" + id_forma + "_" + rand + "_" + "." + extensao; 
-							$("#nome_arquivo02").val(anexo02);
-							} else {
-							var  anexo02 = $("#arquivoanexo02").val();
-							}
-    						
-    						//inserir forma de pgto
-                            		$.ajax({
-                        				url: base_url + "orcamento/CadastrarAtualizarPagamento/" + id_pedido,  
-                        				type: "POST",
-                        				data: { id_pedido_pagamento:id_pedido_pagamento, data_pagamento: data_pagamento, id_forma_pagamento: id_forma_pagamento, id_banco: id_banco, parcela: parcela, nparcelas: nparcelas, valor_pedido: valor_pedido, valor_parcial: valor_parcial, valor_apagar: valor_apagar, taxa: taxa, id_pedido: id_pedido, id_forma: id_forma, anexo: anexo02},
-                        				dataType: "json",
-                        				success: function(data){
-                        				}
-                        			});
-                        			
-                        			if($('input[name="anexo02arquivo"]').val()){
- 									envia_arquivo2(id_pedido);
-                         			}
-                        			
-                        			
-                        	if(parseFloat(total_pgto02.replace(',', '.')) != parseFloat(valor_parcial.replace(',', '.')) && parseFloat(total_pgto02.replace(',', '.')) < parseFloat(valor_parcial.replace(',', '.')) && primeira_parcela02 != ""){
-                              $("#pagamento_03").fadeIn(1000);  
-                             } else { 
-                             $("#pagamento_03").hide();  
-                             }
-							 document.location.reload(true);
-						}
-						
-						//enviar arquivo
-						async function envia_arquivo2(id_pedido)
-						{
-							let formData = new FormData(document.querySelector('#formPedido'));
-							
-							let reqs = await fetch( base_url + "orcamento/enviaArquivo2/" + id_pedido,{
-								method:'post',
-								body:formData
-							} ); 
 						}
                       	</script>
                      
@@ -2809,19 +2008,7 @@ $_SESSION['random'] = rand(0,10000000);
                        
                         <div class="col-md-1 mb-3" id="anexo02">
                        <span><small>Anexo</small></span>
-                       <input  name="anexo02arquivo" id="anexo02arquivo" class="form-control" type="file"> 
-                       <input  name="anexo02arquivo02" id="anexo02arquivo02" class="form-control" type="hidden">     
-                       <input  name="nome_arquivo02" id="nome_arquivo02" class="form-control" type="hidden">  
-                       </div>
-                        <script>
-                                  function myFunc2(){
-                                  var arquivoanexo02 = document.querySelector('#arquivoanexo02').value;
-                                    window.open('<?php echo URL_BASE ?>app/upload/' + arquivoanexo02, '_blank')
-                                  }
-                               </script>
-                       <input type="hidden" name="arquivoanexo02" id="arquivoanexo02"  value=""    class="form-control">
-                       <div class="col-md-1 mb-3" id="anexo02ver">
-                       <button style="margin-left:5px;margin-top:25px" class="btn btn-secondary btn-xs" onclick="myFunc2()"><i data-feather="paperclip"></i></button>  
+                                <input class="form-control" type="file">
                        </div>
                        
                        <div class="col-md-1 mb-3" id="proposta02">
@@ -2829,32 +2016,8 @@ $_SESSION['random'] = rand(0,10000000);
                         <input type="text" name="nproposta02" id="nproposta02"  value=""    class="form-control">
                        </div>
                        
-                       <script>
-                       function excluirparcelas02(){
-                       		
-                       		var resposta = confirm("Deseja remover esse registro?");
-                             if (resposta == true) {
-
-                             
-                       		
-                       		let id_pedido 			= $("#id_pedido").html();
-							let id_forma 			= 2;
-                       
-                       $.ajax({
-                        	url: base_url + "orcamento/ExcluitPagamento/" + id_pedido,  
-                        	type: "POST",
-                        	data: { id_pedido: id_pedido, id_forma: id_forma },
-                        	dataType: "json",
-                        	success: function(data){
-                        	}
-                       });
-                       document.location.reload(true);
-                       }
-                       }
-                       </script>
-                       
                        <div class="col-md-1 mb-3">
-                       <p Style="text-align:center; padding-top:25px"><i data-feather="save" Style="color:#008000" onclick="mostrarparcelas02(this);"></i> <i data-feather="trash-2" Style="color:#FF0000;margin-left:20px" onclick="excluirparcelas02(this);"></i></p>
+                       <p Style="text-align:center; padding-top:30px" onclick="mostrarparcelas02(this);"><i data-feather="save" Style="color:#008000"></i></p>
                        </div>
                       
                        <span id="parcelas_02"> PARCELAS </span>
@@ -2865,16 +2028,14 @@ $_SESSION['random'] = rand(0,10000000);
                        <!– TERCEIRO PAGAMENTO –>
                        
                        <div id="pagamento_03">
-                       <div class="row g-2">  
-                        
+                       <div class="row g-2">    
                          <div class="col-md-1 mb-3">
                         <span><small>VALOR RESTANTE</small></span>
-                        <input readonly type="texto" name="total_restante03" id="total_restante03"  value=""    class="form-control"> 
+                        <h5 id="total_restante03"><?php echo number_format($orcamento_pedido->total_restante03,2,",","."); ?></h5>
                       	</div>
 
                         <div class="col-md-2 mb-3">
                         <span><small><b>TIPO DE PAGAMENTO 03</b></small></span>
-                        <input type="hidden" name="id_pedido_pagamento03" id="id_pedido_pagamento03"  value=""    class="form-control"> 
 						 <div class="mb-2">
 						 
                         <select class="form-select" name="forma_pagamento03" id="forma_pagamento03">
@@ -2901,8 +2062,8 @@ $_SESSION['random'] = rand(0,10000000);
                       	</div>                       
                         </div>
 
-                       <div class="col-md-1 mb-3">
-                        <span><small>VALOR </small></span>
+                       <div class="col-md-2 mb-3">
+                        <span><small>VALOR <span id="tipo_pgto03"></span></small></span>
                         <input type="text" name="valor_pgto03" id="valor_pgto03"  value="<?php echo $orcamento_pedido->valor_pgto03; ?>"    class="form-control mascara-dinheiro"> 
                       </div>
                       
@@ -2913,12 +2074,10 @@ $_SESSION['random'] = rand(0,10000000);
                       
                       <div class="col-md-1 mb-3">
                         <span><small>PRIMEIRA PARCELA</small></span>
-                        <input type="text" name="primeira_parcela03"  id="primeira_parcela03"  autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="<?php echo $orcamento_pedido->primeira_parcela03; ?>">
+                        <input type="text" name="primeira_parcela03"  autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="<?php echo $orcamento_pedido->primeira_parcela03; ?>">
                       </div>
                      	<script>
                       	function mostrarparcelas03(obj){
-                      	
-                      						
                       	 var forma03 = $('#nvezes03 :selected').text(); //
                       	 document.getElementById("parcelas_03").innerHTML = "";
                       	 
@@ -2930,20 +2089,11 @@ $_SESSION['random'] = rand(0,10000000);
                                 },6000);
                                 return false; 
                          };
-                         
-                          if (($("#banco_pagamento03").val() == "")||($("#banco_pagamento03").val()  == null)) {
-                                alert("Escolha um banco");
-                                document.querySelector("#banco_pagamento03").style.borderColor='red';
-                                setTimeout(()=>{
-                                  document.querySelector("#banco_pagamento03").style.borderColor='#ccc';
-                                },6000);
-                                return false; 
-                         };
-                      	                      
-                      	 let total_pgto03str = document.querySelector('#valor_pgto03').value;
-                      	 const total_restante03str = $("#total_restante03").val();
                       	                          
-                         let total_pgto03 		= total_pgto03str.replace('.', '').replace(',', '.');
+                         let total_pgto03str = document.querySelector('#valor_pgto03').value;
+                      	 let total_restante03str = $("#total_restante03").html();
+                      	                          
+                         let total_pgto03 	= total_pgto03str.replace('.', '').replace(',', '.');
                          let total_restante03 	= total_restante03str.replace('.', '').replace(',', '.');
                          
                          if ((total_pgto03 == "") || (total_pgto03 == null) ||(total_pgto03 == 0)) {
@@ -2955,11 +2105,15 @@ $_SESSION['random'] = rand(0,10000000);
                                 return false; 
                          };
                          
-                          var primeira_parcela03 = document.querySelector('input[name="primeira_parcela03"]').value;
-                          
+                         var primeira_parcela03 = document.querySelector('input[name="primeira_parcela03"]').value;
                          
+                         if(parseFloat(total_pgto03.replace(',', '.')) != parseFloat(total_restante03.replace(',', '.')) && parseFloat(total_pgto03.replace(',', '.')) < parseFloat(total_restante03.replace(',', '.')) && primeira_parcela03 != ""){
+                         $("#pagamento_04").fadeIn(1000);  
+                         } else { 
+                         $("#pagamento_04").hide();  
+                         }
                          
-                         if(parseInt(total_pgto03) > total_somado){
+                         if(parseInt(total_pgto03) > parseInt(total_restante03)){
                          alert("Valor do pagamento não pode ser maior que o total");
                          document.querySelector('input[name="valor_pgto03"]').style.borderColor='red';
                          setTimeout(()=>{ 
@@ -2967,7 +2121,6 @@ $_SESSION['random'] = rand(0,10000000);
                                 },6000);
                          return false; 
                          } else { }
-                         
                       	 
                       	 if ((primeira_parcela03 == "")||(primeira_parcela03 == null)) {
                                 alert("Escolha uma data");
@@ -2978,25 +2131,10 @@ $_SESSION['random'] = rand(0,10000000);
                                 return false; 
                          };
                          
-                         //alert($("#arquivoanexo03").val());
-                         
-
-                        
-                         
-                          if(!$('input[name="anexo03arquivo"]').val() && (!$("#arquivoanexo03").val())){
-                                alert("Anexar arquivo");
-                                document.querySelector('input[name="anexo03arquivo"]').style.borderColor='red';
-                                setTimeout(()=>{
-                                  document.querySelector('input[name="anexo03arquivo"]').style.borderColor='#ccc';
-                                },6000);
-                                return false; 
-                         };
-                         
                          let parcela03 = parseInt(total_pgto03)/parseInt(forma03);
                          //alert(parseFloat(parcela03).toFixed(2).replace(".", ","));
                          
                          let datap03 = primeira_parcela03;
-                         
                          	for (i = 1; i <= forma03; i++) {		
 							 
                     		 document.getElementById("parcelas_03").innerHTML += "[ " + i + " ] R$ " + parseFloat(parcela03).toFixed(2).replace(".", ",") + " - " + datap03 + " | ";
@@ -3006,8 +2144,6 @@ $_SESSION['random'] = rand(0,10000000);
                                 var ano = partes[2];
                                 var mes = partes[1]-1;
                                 var dia = partes[0];
-                                
-                                
                                 
                                 datainicial = new Date(ano,mes,dia);
                                 datafinal = new Date(datainicial);
@@ -3019,76 +2155,12 @@ $_SESSION['random'] = rand(0,10000000);
                                 
                                 var dataformatada = dd + '/' + mm + '/' + y;
                                 datap03 = dataformatada;
-                                
  							   // criar um if para descartar feriados e finais de semana
  							   
  							   var restante04 = parseFloat(total_restante03.replace(',', '.')) - parseInt(total_pgto03);
  							   
+ 							   document.getElementById("total_restante04").innerHTML = parseFloat(restante04).toFixed(2).replace(".", ",");
                     		}
-                    		//alert(restante03);
-                    		document.getElementById("total_restante04").value = parseFloat(restante04).toFixed(2).replace(".", ",");
-                    		
-                    		//gravar no bd
-                    		
-                    		let id_pedido_pagamento	= $("#id_pedido_pagamento03").val();
-                    		let data_pagamento 		= $("#primeira_parcela03").val();
-                    		let id_forma_pagamento 	= $("#forma_pagamento03").val();
-                    		let id_banco 			= $("#banco_pagamento03").val();
-                    		
-                    		let parcela 			= 1;
-                    		let nparcelas 			= $("#nvezes03").val();
-                    		let valorTotal			= $("#total_somado").val();
-                    		let valor_pedido		= valorTotal.replace('.', '').replace(',', '.');
-    						let valor_parcial		= total_restante03;
-    						let valor_apagar		= $("#valor_pgto03").val();
-    						let taxa	 			= $("#taxa03").val();
-							let id_pedido 			= $("#id_pedido").html();
-							let id_forma 			= 3;
-
-							if($('input[name="anexo03arquivo"]').val()){
-							var  _nomeArquivo		= document.getElementById("anexo03arquivo");
-							var nomeArquivo			= _nomeArquivo.files[0].name; 
-							var  extensao			= nomeArquivo.split(".").pop();
-							let rand				= Math.floor(Math.random() * 100);
-							//alert(extensao);
-							var  anexo03				= "comprovante_" + id_pedido + "_" + id_forma + "_" + rand + "_" + "." + extensao; 
-							$("#nome_arquivo03").val(anexo03);
-							} else {
-							var  anexo03 = $("#arquivoanexo03").val();
-							}
-    						
-    						//inserir forma de pgto
-                            		$.ajax({
-                        				url: base_url + "orcamento/CadastrarAtualizarPagamento/" + id_pedido,  
-                        				type: "POST",
-                        				data: { id_pedido_pagamento:id_pedido_pagamento, data_pagamento: data_pagamento, id_forma_pagamento: id_forma_pagamento, id_banco: id_banco, parcela: parcela, nparcelas: nparcelas, valor_pedido: valor_pedido, valor_parcial: valor_parcial, valor_apagar: valor_apagar, taxa: taxa, id_pedido: id_pedido, id_forma: id_forma, anexo: anexo03},
-                        				dataType: "json",
-                        				success: function(data){
-                        				}
-                        			});
-                        			
-                        			if($('input[name="anexo03arquivo"]').val()){
- 									envia_arquivo3(id_pedido);
-                         			}
-                        			
-                        			
-                        	if(parseFloat(total_pgto03.replace(',', '.')) != parseFloat(valor_parcial.replace(',', '.')) && parseFloat(total_pgto03.replace(',', '.')) < parseFloat(valor_parcial.replace(',', '.')) && primeira_parcela03 != ""){
-                              $("#pagamento_03").fadeIn(1000);  
-                             } else { 
-                             $("#pagamento_03").hide();  
-                             }
-							 document.location.reload(true);
-						}
-						
-						//enviar arquivo
-						async function envia_arquivo3(id_pedido)
-						{
-							let formData = new FormData(document.querySelector('#formPedido'));
-							
-							let reqs = await fetch( base_url + "orcamento/enviaArquivo3/" + id_pedido,{
-								method:'post',
-								body:formData
-							} ); 
 						}
                       	</script>
                      
@@ -3099,21 +2171,9 @@ $_SESSION['random'] = rand(0,10000000);
                         </select>
                        </div>
                        
-                        <div class="col-md-1 mb-3" id="anexo03">
+                       <div class="col-md-1 mb-3" id="anexo03">
                        <span><small>Anexo</small></span>
-                       <input  name="anexo03arquivo" id="anexo03arquivo" class="form-control" type="file"> 
-                       <input  name="anexo03arquivo03" id="anexo03arquivo03" class="form-control" type="hidden">     
-                       <input  name="nome_arquivo03" id="nome_arquivo03" class="form-control" type="hidden">  
-                       </div>
-                        <script>
-                                  function myFunc3(){
-                                  var arquivoanexo03 = document.querySelector('#arquivoanexo03').value;
-                                    window.open('<?php echo URL_BASE ?>app/upload/' + arquivoanexo03, '_blank')
-                                  }
-                               </script>
-                       <input type="hidden" name="arquivoanexo03" id="arquivoanexo03"  value=""    class="form-control">
-                       <div class="col-md-1 mb-3" id="anexo03ver">
-                       <button style="margin-left:5px;margin-top:25px" class="btn btn-secondary btn-xs" onclick="myFunc3()"><i data-feather="paperclip"></i></button>  
+                                <input class="form-control" type="file">
                        </div>
                        
                        <div class="col-md-1 mb-3" id="proposta03">
@@ -3121,32 +2181,8 @@ $_SESSION['random'] = rand(0,10000000);
                         <input type="text" name="nproposta03" id="nproposta03"  value=""    class="form-control">
                        </div>
                        
-                       <script>
-                       function excluirparcelas03(){
-                       		
-                       		var resposta = confirm("Deseja remover esse registro?");
-                             if (resposta == true) {
-
-                             
-                       		
-                       		let id_pedido 			= $("#id_pedido").html();
-							let id_forma 			= 3;
-                       
-                       $.ajax({
-                        	url: base_url + "orcamento/ExcluitPagamento/" + id_pedido,  
-                        	type: "POST",
-                        	data: { id_pedido: id_pedido, id_forma: id_forma },
-                        	dataType: "json",
-                        	success: function(data){
-                        	}
-                       });
-                       document.location.reload(true);
-                       }
-                       }
-                       </script>
-                       
                        <div class="col-md-1 mb-3">
-                       <p Style="text-align:center; padding-top:25px"><i data-feather="save" Style="color:#008000" onclick="mostrarparcelas03(this);"></i> <i data-feather="trash-2" Style="color:#FF0000;margin-left:20px" onclick="excluirparcelas03(this);"></i></p>
+                       <p Style="text-align:center; padding-top:30px" onclick="mostrarparcelas03(this);"><i data-feather="save" Style="color:#008000"></i></p>
                        </div>
                       
                        <span id="parcelas_03"> PARCELAS </span>
@@ -3162,12 +2198,11 @@ $_SESSION['random'] = rand(0,10000000);
                         
                          <div class="col-md-1 mb-3">
                         <span><small>VALOR RESTANTE</small></span>
-                        <input readonly type="texto" name="total_restante04" id="total_restante04"  value=""    class="form-control"> 
+                        <h5 id="total_restante04"><?php echo number_format($orcamento_pedido->total_restante04,2,",","."); ?></h5>
                       	</div>
 
                         <div class="col-md-2 mb-3">
                         <span><small><b>TIPO DE PAGAMENTO 04</b></small></span>
-                        <input type="hidden" name="id_pedido_pagamento04" id="id_pedido_pagamento04"  value=""    class="form-control"> 
 						 <div class="mb-2">
 						 
                         <select class="form-select" name="forma_pagamento04" id="forma_pagamento04">
@@ -3194,9 +2229,9 @@ $_SESSION['random'] = rand(0,10000000);
                       	</div>                       
                         </div>
 
-                       <div class="col-md-1 mb-3">
-                        <span><small>VALOR </small></span>
-                        <input type="text" name="valor_pgto04" id="valor_pgto04"  value="<?php echo $orcamento_pedido->valor_pgto04; ?>"    class="form-control mascara-dinheiro"> 
+                       <div class="col-md-2 mb-3">
+                        <span><small>VALOR <span id="tipo_pgto04"></span></small></span>
+                        <input type="text" name="valor_pgto04" id="valor_pgto04"  value="<?php echo $orcamento_pedido->valor_pgto04; ?>" class="form-control mascara-dinheiro"> 
                       </div>
                       
                        <div class="col-md-1 mb-3">
@@ -3206,11 +2241,10 @@ $_SESSION['random'] = rand(0,10000000);
                       
                       <div class="col-md-1 mb-3">
                         <span><small>PRIMEIRA PARCELA</small></span>
-                        <input type="text" name="primeira_parcela04"  id="primeira_parcela04"  autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="<?php echo $orcamento_pedido->primeira_parcela04; ?>">
+                        <input type="text" name="primeira_parcela04"  id="primeira_parcela04" autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="<?php echo $orcamento_pedido->primeira_parcela04; ?>">
                       </div>
                      	<script>
                       	function mostrarparcelas04(obj){
-
                       	 var forma04 = $('#nvezes04 :selected').text(); //
                       	 document.getElementById("parcelas_04").innerHTML = "";
                       	 
@@ -3222,20 +2256,11 @@ $_SESSION['random'] = rand(0,10000000);
                                 },6000);
                                 return false; 
                          };
-                         
-                          if (($("#banco_pagamento04").val() == "")||($("#banco_pagamento04").val()  == null)) {
-                                alert("Escolha um banco");
-                                document.querySelector("#banco_pagamento04").style.borderColor='red';
-                                setTimeout(()=>{
-                                  document.querySelector("#banco_pagamento04").style.borderColor='#ccc';
-                                },6000);
-                                return false; 
-                         };
-                      	                      
-                      	 let total_pgto04str = document.querySelector('#valor_pgto04').value;
-                      	 const total_restante04str = document.querySelector('#total_restante04').value;
                       	                          
-                         let total_pgto04 		= total_pgto04str.replace('.', '').replace(',', '.');
+                         let total_pgto04str = document.querySelector('#valor_pgto04').value;
+                      	 let total_restante04str = $("#total_restante04").html();
+                      	                          
+                         let total_pgto04 	= total_pgto04str.replace('.', '').replace(',', '.');
                          let total_restante04 	= total_restante04str.replace('.', '').replace(',', '.');
                          
                          if ((total_pgto04 == "") || (total_pgto04 == null) ||(total_pgto04 == 0)) {
@@ -3247,9 +2272,15 @@ $_SESSION['random'] = rand(0,10000000);
                                 return false; 
                          };
                          
-                          var primeira_parcela04 = document.querySelector('input[name="primeira_parcela04"]').value;
+                         var primeira_parcela04 = document.querySelector('input[name="primeira_parcela04"]').value;
                          
-                         if(parseInt(total_pgto04) > total_somado){
+                         if(parseFloat(total_pgto04.replace(',', '.')) != parseFloat(total_restante04.replace(',', '.')) && parseFloat(total_pgto04.replace(',', '.')) < parseFloat(total_restante04.replace(',', '.')) && primeira_parcela04 != ""){
+                         $("#pagamento_05").fadeIn(1000);  
+                         } else { 
+                         $("#pagamento_05").hide();  
+                         }
+                         
+                         if(parseInt(total_pgto04) > parseInt(total_restante04)){
                          alert("Valor do pagamento não pode ser maior que o total");
                          document.querySelector('input[name="valor_pgto04"]').style.borderColor='red';
                          setTimeout(()=>{ 
@@ -3257,7 +2288,6 @@ $_SESSION['random'] = rand(0,10000000);
                                 },6000);
                          return false; 
                          } else { }
-                         
                       	 
                       	 if ((primeira_parcela04 == "")||(primeira_parcela04 == null)) {
                                 alert("Escolha uma data");
@@ -3268,22 +2298,10 @@ $_SESSION['random'] = rand(0,10000000);
                                 return false; 
                          };
                          
-                         //alert($("#arquivoanexo04").val());
-                         
-                          if(!$('input[name="anexo04arquivo"]').val() && (!$("#arquivoanexo04").val())){
-                                alert("Anexar arquivo");
-                                document.querySelector('input[name="anexo04arquivo"]').style.borderColor='red';
-                                setTimeout(()=>{
-                                  document.querySelector('input[name="anexo04arquivo"]').style.borderColor='#ccc';
-                                },6000);
-                                return false; 
-                         };
-                         
                          let parcela04 = parseInt(total_pgto04)/parseInt(forma04);
                          //alert(parseFloat(parcela04).toFixed(2).replace(".", ","));
                          
                          let datap04 = primeira_parcela04;
-                         
                          	for (i = 1; i <= forma04; i++) {		
 							 
                     		 document.getElementById("parcelas_04").innerHTML += "[ " + i + " ] R$ " + parseFloat(parcela04).toFixed(2).replace(".", ",") + " - " + datap04 + " | ";
@@ -3293,8 +2311,6 @@ $_SESSION['random'] = rand(0,10000000);
                                 var ano = partes[2];
                                 var mes = partes[1]-1;
                                 var dia = partes[0];
-                                
-                                
                                 
                                 datainicial = new Date(ano,mes,dia);
                                 datafinal = new Date(datainicial);
@@ -3306,76 +2322,12 @@ $_SESSION['random'] = rand(0,10000000);
                                 
                                 var dataformatada = dd + '/' + mm + '/' + y;
                                 datap04 = dataformatada;
-                                
  							   // criar um if para descartar feriados e finais de semana
  							   
  							   var restante05 = parseFloat(total_restante04.replace(',', '.')) - parseInt(total_pgto04);
  							   
+ 							   document.getElementById("total_restante05").innerHTML = parseFloat(restante05).toFixed(2).replace(".", ",");
                     		}
-                    		//alert(restante04);
-                    		document.getElementById("total_restante05").value = parseFloat(restante05).toFixed(2).replace(".", ",");
-                    		
-                    		//gravar no bd
-                    		
-                    		let id_pedido_pagamento	= $("#id_pedido_pagamento04").val();
-                    		let data_pagamento 		= $("#primeira_parcela04").val();
-                    		let id_forma_pagamento 	= $("#forma_pagamento04").val();
-                    		let id_banco 			= $("#banco_pagamento04").val();
-                    		
-                    		let parcela 			= 1;
-                    		let nparcelas 			= $("#nvezes04").val();
-                    		let valorTotal			= $("#total_somado").val();
-                    		let valor_pedido		= valorTotal.replace('.', '').replace(',', '.');
-    						let valor_parcial		= total_restante04;
-    						let valor_apagar		= $("#valor_pgto04").val();
-    						let taxa	 			= $("#taxa04").val();
-							let id_pedido 			= $("#id_pedido").html();
-							let id_forma 			= 4;
-							
-							if($('input[name="anexo04arquivo"]').val()){
-							var  _nomeArquivo		= document.getElementById("anexo04arquivo");
-							var nomeArquivo			= _nomeArquivo.files[0].name; 
-							var  extensao			= nomeArquivo.split(".").pop();
-							let rand				= Math.floor(Math.random() * 100);
-							//alert(extensao);
-							var  anexo04				= "comprovante_" + id_pedido + "_" + id_forma + "_" + rand + "_" + "." + extensao; 
-							$("#nome_arquivo04").val(anexo04);
-							} else {
-							var  anexo04 = $("#arquivoanexo04").val();
-							}
-    						
-    						//inserir forma de pgto
-                            		$.ajax({
-                        				url: base_url + "orcamento/CadastrarAtualizarPagamento/" + id_pedido,  
-                        				type: "POST",
-                        				data: { id_pedido_pagamento:id_pedido_pagamento, data_pagamento: data_pagamento, id_forma_pagamento: id_forma_pagamento, id_banco: id_banco, parcela: parcela, nparcelas: nparcelas, valor_pedido: valor_pedido, valor_parcial: valor_parcial, valor_apagar: valor_apagar, taxa: taxa, id_pedido: id_pedido, id_forma: id_forma, anexo: anexo04},
-                        				dataType: "json",
-                        				success: function(data){
-                        				}
-                        			});
-                        			
-                        			if($('input[name="anexo04arquivo"]').val()){
- 									envia_arquivo4(id_pedido);
-                         			}
-                        			
-                        			
-                        	if(parseFloat(total_pgto04.replace(',', '.')) != parseFloat(valor_parcial.replace(',', '.')) && parseFloat(total_pgto04.replace(',', '.')) < parseFloat(valor_parcial.replace(',', '.')) && primeira_parcela04 != ""){
-                              $("#pagamento_04").fadeIn(1000);  
-                             } else { 
-                             $("#pagamento_04").hide();  
-                             }
-							 document.location.reload(true);
-						}
-						
-						//enviar arquivo
-						async function envia_arquivo4(id_pedido)
-						{
-							let formData = new FormData(document.querySelector('#formPedido'));
-							
-							let reqs = await fetch( base_url + "orcamento/enviaArquivo4/" + id_pedido,{
-								method:'post',
-								body:formData
-							} ); 
 						}
                       	</script>
                      
@@ -3388,19 +2340,7 @@ $_SESSION['random'] = rand(0,10000000);
                        
                         <div class="col-md-1 mb-3" id="anexo04">
                        <span><small>Anexo</small></span>
-                       <input  name="anexo04arquivo" id="anexo04arquivo" class="form-control" type="file"> 
-                       <input  name="anexo04arquivo04" id="anexo04arquivo04" class="form-control" type="hidden">     
-                       <input  name="nome_arquivo04" id="nome_arquivo04" class="form-control" type="hidden">  
-                       </div>
-                        <script>
-                                  function myFunc4(){
-                                  var arquivoanexo04 = document.querySelector('#arquivoanexo04').value;
-                                    window.open('<?php echo URL_BASE ?>app/upload/' + arquivoanexo04, '_blank')
-                                  }
-                               </script>
-                       <input type="hidden" name="arquivoanexo04" id="arquivoanexo04"  value=""    class="form-control">
-                       <div class="col-md-1 mb-3" id="anexo04ver">
-                       <button style="margin-left:5px;margin-top:25px" class="btn btn-secondary btn-xs" onclick="myFunc4()"><i data-feather="paperclip"></i></button>  
+                                <input class="form-control" type="file">
                        </div>
                        
                        <div class="col-md-1 mb-3" id="proposta04">
@@ -3408,32 +2348,8 @@ $_SESSION['random'] = rand(0,10000000);
                         <input type="text" name="nproposta04" id="nproposta04"  value=""    class="form-control">
                        </div>
                        
-                       <script>
-                       function excluirparcelas04(){
-                       		
-                       		var resposta = confirm("Deseja remover esse registro?");
-                             if (resposta == true) {
-
-                             
-                       		
-                       		let id_pedido 			= $("#id_pedido").html();
-							let id_forma 			= 4;
-                       
-                       $.ajax({
-                        	url: base_url + "orcamento/ExcluitPagamento/" + id_pedido,  
-                        	type: "POST",
-                        	data: { id_pedido: id_pedido, id_forma: id_forma },
-                        	dataType: "json",
-                        	success: function(data){
-                        	}
-                       });
-                       document.location.reload(true);
-                       }
-                       }
-                       </script>
-                       
                        <div class="col-md-1 mb-3">
-                       <p Style="text-align:center; padding-top:25px"><i data-feather="save" Style="color:#008000" onclick="mostrarparcelas04(this);"></i> <i data-feather="trash-2" Style="color:#FF0000;margin-left:20px" onclick="excluirparcelas04(this);"></i></p>
+                       <p Style="text-align:center; padding-top:30px" onclick="mostrarparcelas04(this);"><i data-feather="save" Style="color:#008000"></i></p>
                        </div>
                       
                        <span id="parcelas_04"> PARCELAS </span>
@@ -3448,12 +2364,11 @@ $_SESSION['random'] = rand(0,10000000);
                         
                          <div class="col-md-1 mb-3">
                         <span><small>VALOR RESTANTE</small></span>
-                        <input readonly type="texto" name="total_restante05" id="total_restante05"  value=""    class="form-control"> 
+                        <h5 id="total_restante05"><?php echo number_format($orcamento_pedido->total_restante05,2,",","."); ?></h5>
                       	</div>
 
                         <div class="col-md-2 mb-3">
-                        <span><small><b>TIPO DE PAGAMENTO 05</b></small></span>
-                        <input type="hidden" name="id_pedido_pagamento05" id="id_pedido_pagamento05"  value=""    class="form-control"> 
+                        <span><small>TIPO DE PAGAMENTO 05</small></span>
 						 <div class="mb-2">
 						 
                         <select class="form-select" name="forma_pagamento05" id="forma_pagamento05">
@@ -3480,8 +2395,8 @@ $_SESSION['random'] = rand(0,10000000);
                       	</div>                       
                         </div>
 
-                       <div class="col-md-1 mb-3">
-                        <span><small>VALOR </small></span>
+                       <div class="col-md-2 mb-3">
+                        <span><small>VALOR <span id="tipo_pgto05"></span></small></span>
                         <input type="text" name="valor_pgto05" id="valor_pgto05"  value="<?php echo $orcamento_pedido->valor_pgto05; ?>"    class="form-control mascara-dinheiro"> 
                       </div>
                       
@@ -3492,12 +2407,10 @@ $_SESSION['random'] = rand(0,10000000);
                       
                       <div class="col-md-1 mb-3">
                         <span><small>PRIMEIRA PARCELA</small></span>
-                        <input type="text" name="primeira_parcela05"  id="primeira_parcela05"  autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="<?php echo $orcamento_pedido->primeira_parcela05; ?>">
+                        <input type="text" name="primeira_parcela05"  autocomplete="off" class="datepicker-here form-control digits" id=".date-picker" data-language="en" value="<?php echo $orcamento_pedido->primeira_parcela05; ?>">
                       </div>
                      	<script>
                       	function mostrarparcelas05(obj){
-                      	
-                      	
                       	 var forma05 = $('#nvezes05 :selected').text(); //
                       	 document.getElementById("parcelas_05").innerHTML = "";
                       	 
@@ -3509,20 +2422,11 @@ $_SESSION['random'] = rand(0,10000000);
                                 },6000);
                                 return false; 
                          };
-                         
-                          if (($("#banco_pagamento05").val() == "")||($("#banco_pagamento05").val()  == null)) {
-                                alert("Escolha um banco");
-                                document.querySelector("#banco_pagamento05").style.borderColor='red';
-                                setTimeout(()=>{
-                                  document.querySelector("#banco_pagamento05").style.borderColor='#ccc';
-                                },6000);
-                                return false; 
-                         };
-                      	                      
-                      	 let total_pgto05str = document.querySelector('#valor_pgto05').value;
-                      	 let total_restante05str = document.getElementById("total_restante05").value;
                       	                          
-                         let total_pgto05 		= total_pgto05str.replace('.', '').replace(',', '.');
+                         let total_pgto05str = document.querySelector('#valor_pgto05').value;
+                      	 let total_restante05str = $("#total_restante05").html();
+                      	                          
+                         let total_pgto05 	= total_pgto05str.replace('.', '').replace(',', '.');
                          let total_restante05 	= total_restante05str.replace('.', '').replace(',', '.');
                          
                          if ((total_pgto05 == "") || (total_pgto05 == null) ||(total_pgto05 == 0)) {
@@ -3534,10 +2438,21 @@ $_SESSION['random'] = rand(0,10000000);
                                 return false; 
                          };
                          
-                          var primeira_parcela05 = document.querySelector('input[name="primeira_parcela05"]').value;
+                         var primeira_parcela05 = document.querySelector('input[name="primeira_parcela05"]').value;
                          
-                         if(total_pgto05 != total_restante05){
-                         alert("Valor do pagamento tem que ser igual ao restante");
+                         if(total_pgto05 != total_restante05 && total_pgto05 < total_restante05 && primeira_parcela05 != ""){
+						 alert("Quinta forma de pagamento não pode ser menor que " + total_restante05);
+						 document.querySelector('input[name="valor_pgto05"]').style.borderColor='red';
+                         setTimeout(()=>{ 
+                         document.querySelector('input[name="valor_pgto05"]').style.borderColor='#ccc';
+                                },6000);
+                         return false;  
+                         } else { 
+
+                         }
+                         
+                         if(parseInt(total_pgto05) > parseInt(total_restante05)){
+                         alert("Valor do pagamento não pode ser maior que o total");
                          document.querySelector('input[name="valor_pgto05"]').style.borderColor='red';
                          setTimeout(()=>{ 
                          document.querySelector('input[name="valor_pgto05"]').style.borderColor='#ccc';
@@ -3554,23 +2469,11 @@ $_SESSION['random'] = rand(0,10000000);
                                 },6000);
                                 return false; 
                          };
-                        
-                         //alert($("#arquivoanexo05").val());
-                         
-                          if(!$('input[name="anexo05arquivo"]').val() && (!$("#arquivoanexo05").val())){
-                                alert("Anexar arquivo");
-                                document.querySelector('input[name="anexo05arquivo"]').style.borderColor='red';
-                                setTimeout(()=>{
-                                  document.querySelector('input[name="anexo05arquivo"]').style.borderColor='#ccc';
-                                },6000);
-                                return false; 
-                         };
                          
                          let parcela05 = parseInt(total_pgto05)/parseInt(forma05);
                          //alert(parseFloat(parcela05).toFixed(2).replace(".", ","));
                          
                          let datap05 = primeira_parcela05;
-                         
                          	for (i = 1; i <= forma05; i++) {		
 							 
                     		 document.getElementById("parcelas_05").innerHTML += "[ " + i + " ] R$ " + parseFloat(parcela05).toFixed(2).replace(".", ",") + " - " + datap05 + " | ";
@@ -3580,8 +2483,6 @@ $_SESSION['random'] = rand(0,10000000);
                                 var ano = partes[2];
                                 var mes = partes[1]-1;
                                 var dia = partes[0];
-                                
-                                
                                 
                                 datainicial = new Date(ano,mes,dia);
                                 datafinal = new Date(datainicial);
@@ -3593,72 +2494,8 @@ $_SESSION['random'] = rand(0,10000000);
                                 
                                 var dataformatada = dd + '/' + mm + '/' + y;
                                 datap05 = dataformatada;
-                                
- 							   
+ 							   // criar um if para descartar feriados e finais de semana
                     		}
- 							//alert("oi");
- 							 
-                    		//gravar no bd
-                    		
-                    		let id_pedido_pagamento	= $("#id_pedido_pagamento05").val();
-                    		let data_pagamento 		= $("#primeira_parcela05").val();
-                    		let id_forma_pagamento 	= $("#forma_pagamento05").val();
-                    		let id_banco 			= $("#banco_pagamento05").val();
-                    		
-                    		let parcela 			= 1;
-                    		let nparcelas 			= $("#nvezes05").val();
-                    		let valorTotal			= $("#total_somado").val();
-                    		let valor_pedido		= valorTotal.replace('.', '').replace(',', '.');
-    						let valor_parcial		= total_restante05;
-    						let valor_apagar		= $("#valor_pgto05").val();
-    						let taxa	 			= $("#taxa05").val();
-							let id_pedido 			= $("#id_pedido").html();
-							let id_forma 			= 5;
-							
-							if($('input[name="anexo05arquivo"]').val()){
-							var  _nomeArquivo		= document.getElementById("anexo05arquivo");
-							var nomeArquivo			= _nomeArquivo.files[0].name; 
-							var  extensao			= nomeArquivo.split(".").pop();
-							let rand				= Math.floor(Math.random() * 100);
-							//alert(extensao);
-							var  anexo05				= "comprovante_" + id_pedido + "_" + id_forma + "_" + rand + "_" + "." + extensao; 
-							$("#nome_arquivo05").val(anexo05);
-							} else {
-							var  anexo05 = $("#arquivoanexo05").val();
-							}
-
-    						//inserir forma de pgto
-                            		$.ajax({
-                        				url: base_url + "orcamento/CadastrarAtualizarPagamento/" + id_pedido,  
-                        				type: "POST",
-                        				data: { id_pedido_pagamento:id_pedido_pagamento, data_pagamento: data_pagamento, id_forma_pagamento: id_forma_pagamento, id_banco: id_banco, parcela: parcela, nparcelas: nparcelas, valor_pedido: valor_pedido, valor_parcial: valor_parcial, valor_apagar: valor_apagar, taxa: taxa, id_pedido: id_pedido, id_forma: id_forma, anexo: anexo05},
-                        				dataType: "json",
-                        				success: function(data){
-                        				}
-                        			});
-                        			
-                        			if($('input[name="anexo05arquivo"]').val()){
- 									envia_arquivo5(id_pedido);
-                         			}
-                        			
-                        			
-                        	if(parseFloat(total_pgto05.replace(',', '.')) != parseFloat(valor_parcial.replace(',', '.')) && parseFloat(total_pgto05.replace(',', '.')) < parseFloat(valor_parcial.replace(',', '.')) && primeira_parcela05 != ""){
-                              $("#pagamento_05").fadeIn(1000);  
-                             } else { 
-                             $("#pagamento_05").hide();  
-                             }
-							 document.location.reload(true);
-						}
-						
-						//enviar arquivo
-						async function envia_arquivo5(id_pedido)
-						{
-							let formData = new FormData(document.querySelector('#formPedido'));
-							
-							let reqs = await fetch( base_url + "orcamento/enviaArquivo3/" + id_pedido,{
-								method:'post',
-								body:formData
-							} ); 
 						}
                       	</script>
                      
@@ -3671,19 +2508,7 @@ $_SESSION['random'] = rand(0,10000000);
                        
                         <div class="col-md-1 mb-3" id="anexo05">
                        <span><small>Anexo</small></span>
-                       <input  name="anexo05arquivo" id="anexo05arquivo" class="form-control" type="file"> 
-                       <input  name="anexo05arquivo05" id="anexo05arquivo05" class="form-control" type="hidden">     
-                       <input  name="nome_arquivo05" id="nome_arquivo05" class="form-control" type="hidden">  
-                       </div>
-                        <script>
-                                  function myFunc5(){
-                                  var arquivoanexo05 = document.querySelector('#arquivoanexo05').value;
-                                    window.open('<?php echo URL_BASE ?>app/upload/' + arquivoanexo05, '_blank')
-                                  }
-                               </script>
-                       <input type="hidden" name="arquivoanexo05" id="arquivoanexo05"  value=""    class="form-control">
-                       <div class="col-md-1 mb-3" id="anexo05ver">
-                       <button style="margin-left:5px;margin-top:25px" class="btn btn-secondary btn-xs" onclick="myFunc5()"><i data-feather="paperclip"></i></button>  
+                                <input class="form-control" type="file">
                        </div>
                        
                        <div class="col-md-1 mb-3" id="proposta05">
@@ -3691,32 +2516,8 @@ $_SESSION['random'] = rand(0,10000000);
                         <input type="text" name="nproposta05" id="nproposta05"  value=""    class="form-control">
                        </div>
                        
-                       <script>
-                       function excluirparcelas05(){
-                       		
-                       		var resposta = confirm("Deseja remover esse registro?");
-                             if (resposta == true) {
-
-                             
-                       		
-                       		let id_pedido 			= $("#id_pedido").html();
-							let id_forma 			= 3;
-                       
-                       $.ajax({
-                        	url: base_url + "orcamento/ExcluitPagamento/" + id_pedido,  
-                        	type: "POST",
-                        	data: { id_pedido: id_pedido, id_forma: id_forma },
-                        	dataType: "json",
-                        	success: function(data){
-                        	}
-                       });
-                       document.location.reload(true);
-                       }
-                       }
-                       </script>
-                       
                        <div class="col-md-1 mb-3">
-                       <p Style="text-align:center; padding-top:25px"><i data-feather="save" Style="color:#008000" onclick="mostrarparcelas05(this);"></i> <i data-feather="trash-2" Style="color:#FF0000;margin-left:20px" onclick="excluirparcelas05(this);"></i></p>
+                       <p Style="text-align:center; padding-top:30px" onclick="mostrarparcelas05(this);"><i data-feather="save" Style="color:#008000"></i></p>
                        </div>
                       
                        <span id="parcelas_05"> PARCELAS </span>
@@ -3734,51 +2535,32 @@ $_SESSION['random'] = rand(0,10000000);
 
                         <div class="col-md-3 mb-2">
                       <span style="h6 txt-grey"><small>ANEXAR ARQUIVOS</small></span>
+                      
+                      
+                      <span id='btnMultiplosArquivos'><i data-feather="save" Style="color:#008000"></i></span>
+                     	<input type='file' id='multiplosArquivos' name='multiplosArquivos[]' multiple=m style='display:none;'>
+                      
+                      // não consigo usar o dropzone? cara, eu nunca usei, teria que a prender, isso pode levar tempo, ok, deixa esse então pra depois, eu já fiz em php em ultimo caso faço em php
+                      
+                      vamos para proxima
+                      
+                      
+                      
 					  <div class="card-body add-post">
                       <form name="frmImage" action="image-add.php?action=saveimg" class="dropzone">
                       <div class="m-0 dz-message needsclick" ><i class="icon-cloud-up"></i>
                           <h6 class="mb-0">Solte os arquivos aqui ou clique para fazer upload.</h6>
-                          <input type="hidden" name="id_pedido" value="<?php echo $orcamento_pedido->id_pedido ?>">
+                          <input type="hidden" name="id_chamado" value="<?php echo ($chamado->id_chamado) ? $chamado->id_chamado : null ?>">
                         </div>                      
                       </form>
                     	<div class="btn-menu">
-                        <a href="" class="link">
-                        <button class="btn btn-primary">Enviar anexos</button>
+                        <a href="" class="link"><?php if($chamado->id_chamado){?>
+                        <button class="btn btn-primary">Enviar anexo</button><?php } else {}?>
                         </a>
                     	</div>
                       
                     	</div> 					  
 
-                      </div>
-                       <div class="col-md-6 mb-2">
-                       <span style="h6 txt-grey"><small>ARQUIVOS ANEXOS</small></span>
-                        <div class="card-body">
-                        <ul class="icon-lists border navs-icon">
-                        <?php $i =0; foreach ($pedidoanexo as $panexo){ $i++;
-                          $extension = pathinfo($panexo->arquivo, PATHINFO_EXTENSION);
-                          ?>
-                          <?php if($extension == "jpg" or $extension == "png" or $extension == "jpeg" or $extension == "gif"){?>
-                        <li style="line-height: 1;">
-                        <table>
-                        <tr><td><a href="<?php echo ($panexo->arquivo) ? URL_BASE."app/upload/".$panexo->arquivo : null ?>" target="_blank"><i data-feather="image"></i><span> <?php echo ($panexo->arquivo) ? $panexo->arquivo : null ?></span></a></td>
-                        <td><button class="btn btn-outline" href="javascript:;" onclick="return excluirarquivo(this)" data-entidade ="orcamento" data-id="<?php echo $panexo->id_pedido_arquivo ?>" data-id-pedido="<?php echo $panexo->id_pedido ?>"><i class="fa fa-trash" style="color:#ff5f24"></i></button></td></tr>
-                        </table>
-            			</li>
-                        <?php } else {?>
-                        <li>
-                        <table>
-                        <tr><td><a href="<?php echo ($panexo->arquivo) ? URL_BASE."app/upload/".$panexo->arquivo : null ?>" target="_blank"><i data-feather="file-text"></i><span> <?php echo ($panexo->arquivo) ? $panexo->arquivo : null ?></span></a></td>
-                     	<td><button class="btn btn-outline" href="javascript:;" onclick="return excluirarquivo(this)" data-entidade ="orcamento" data-id="<?php echo $panexo->id_pedido_arquivo ?>" data-id-pedido="<?php echo $panexo->id_pedido ?>"><i class="fa fa-trash" style="color:#ff5f24"></i></button></td></tr>
-                        </table>
-						</li>
-                        <?php } ?>
-                        <?php } ?>	
-                        </ul>
-                        
-                      	</div>
-
-                      	</div>
-                      
                       </div>
                       
                       <script>
@@ -3787,43 +2569,30 @@ $_SESSION['random'] = rand(0,10000000);
                       });
                       
                       </script>
+                      
+                      
+                      
+                      
 
+                       <div class="col-md-8 mb-3">
+                       <span style="h6 txt-grey"><small>ARQUIVOS ANEXADOS</small></span>
+ 					   
+                       </div>
+                      
+                   		</div>
                    		<!– FINAL ANEXAR ARQUIVOS  –>
                    		
                    		<!– observações –>
-                   		
-                   		<script>
-                   		function AtualizarTextos(obj){
-                   		
-                   			var textolivre 		= $("#textolivre").val();
-                   			var observacao 		= $("#observacao").val();
-                            var id_pedido		= $("#id_pedido").html();
-                            
-                            //alert(id_pedido);
-                                    
-                        	$.ajax({
-                        		url: base_url + "orcamento/AtualizarTextosBD/" + id_pedido,  
-                        		type: "POST",
-                        		data: { textolivre: textolivre, observacao: observacao, id_pedido: id_pedido  },
-                        		dataType: "json",
-                        		success: function(data){
-                        		}
-                        	});
-                        }
-                   		</script>
-                   		
-                   		
-                   		
                         <div id="observacoes" class="row g-2">    
 
                         <div class="col-md-6 mb-3">
                        <span style="h6 txt-grey"><small>TEXTO LIVRE</small></span>
- 					   <textarea onchange="AtualizarTextos(this);" name="textolivre" id="textolivre"  class="form-control" rows="10" placeholder="Escreva o texto livre interno, não sairá na nota"><?php echo $orcamento_pedido->textolivre; ?></textarea>
+ 					   <textarea name="textolivre" class="form-control" rows="10" placeholder="Escreva o texto livre interno, não sairá na nota"></textarea>
                        </div>
 
                        <div class="col-md-6 mb-3">
                        <span style="h6 txt-grey"><small>OBSERVAÇÕES</small></span>
- 					   <textarea onchange="AtualizarTextos(this);"  name="observacao" id="observacao" class="form-control" rows="10" placeholder="Escreva as observações que sairão na nota"><?php echo $orcamento_pedido->observacao; ?></textarea>
+ 					   <textarea name="observacao" class="form-control" rows="10" placeholder="Escreva as observações que sairão na nota"></textarea>
                        </div>
                       
                    		</div>
@@ -3834,15 +2603,17 @@ $_SESSION['random'] = rand(0,10000000);
                    		<div id="finalizar_pedido" class="row g-2">    
 						<div class="col-md-6 mb-3" style="display: flex;">
 						
-						<a href="http://localhost/022022/dompdf/?id_pedido=<?php echo $orcamento_pedido->id_pedido; ?>" target=”_blank”  class="btn btn-warning" style="white-space: nowrap;" id="btnImprimir" onclick="CriaPDF()" />VIZUALIZAR PRÉ NOTA DO PEDIDO Nº <?php echo $orcamento_pedido->id_pedido; ?></a>
+						<a href="http://localhost/022022/dompdf/" target=”_blank”  class="btn btn-warning" style="white-space: nowrap;" id="btnImprimir" onclick="CriaPDF()" />VIZUALIZAR PRÉ NOTA DO PEDIDO Nº <?php echo $orcamento_pedido->id_pedido; ?></a>
                        </div>
                         <div class="col-md-6 mb-3">
-                       <a href="<?php echo URL_BASE . "orcamento/finalizar/".$orcamento_pedido->id_pedido?>" class="btn btn-success" style="white-space: nowrap;"> FINALIZAR PEDIDO Nº <?php echo $orcamento_pedido->id_pedido; ?></a>
+                       <a href="#" class="btn btn-success" style="white-space: nowrap;"> FINALIZAR PEDIDO Nº <?php echo $orcamento_pedido->id_pedido; ?></a>
                        </div>
 
                    		</div>
 
                       </div>
+                      
+                       
 
                       </div>
                       

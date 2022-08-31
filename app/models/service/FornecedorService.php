@@ -2,6 +2,7 @@
 namespace app\models\service;
 
 use app\models\dao\FornecedorDao;
+use app\models\validacao\FornecedorValidacao;
 
 class FornecedorService{
     public static function salvar($fornecedor, $campo, $tabela){
