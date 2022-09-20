@@ -64,6 +64,8 @@ $dversao = date('d/m/Y', strtotime($cur_idv['data']));
                       <li><a href="<?php echo URL_BASE . "orcamento"?>">Orçamentos</a></li>
                       <li><a href="<?php echo URL_BASE . "Pedido"?>">Pedidos</a></li>
                       <li><a href="<?php echo URL_BASE . "pipeline"?>">PipeLine</a></li>
+                      <li><a href="<?php echo URL_BASE . "financeiro/lista_pedido_faturado"?>">Emitir NFE</a></li>
+                      
                     </ul>
                   </li>
                   

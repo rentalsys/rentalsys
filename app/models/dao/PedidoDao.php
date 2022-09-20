@@ -47,5 +47,15 @@ class PedidoDao extends Model{
         
         return $this->select($this->db, $sql);
     }
+
+    public function listaFaturado(){
+        $sql = "SELECT * FROM venda_pedido AS p
+                INNER JOIN cliente AS c ON p.id_cliente = c.id_cliente
+                INNER JOIN venda_status_pedido AS s ON p.id_status_pedido = s.id_status_pedido 
+                INNER JOIN usuario AS u ON p.id_usuario = u.id_usuario
+                WHERE p.id_status_pedido = 5";
+        
+        return $this->select($this->db, $sql);
+    }
 }
 ?>

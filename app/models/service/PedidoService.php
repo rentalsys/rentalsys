@@ -29,5 +29,10 @@ class PedidoService{
         $dao = new PedidoDao();
         return $dao->listaParaFaturar();
     }
+
+    public static function listaFaturado(){
+        $dao = new PedidoDao();
+        return $dao->listaFaturado();
+    }
 }
 

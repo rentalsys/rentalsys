@@ -13,8 +13,8 @@ define('TIMEZONE',"America/Fortaleza");
 define('CAMINHO'            , realpath('./'));
 define("TITULO_SITE","RentalSys");
 
-define('URL_BASE', 'http://' . $_SERVER["HTTP_HOST"].'/022022/');
-define('URL_IMAGEM', "http://". $_SERVER['HTTP_HOST'] . "/022022/app/upload/");
+define('URL_BASE', 'http://' . $_SERVER["HTTP_HOST"].'/metodoagora/rentalsys/');
+define('URL_IMAGEM', "http://". $_SERVER['HTTP_HOST'] . "/metodoagora/rentalsys/app/upload/");
 
 define("SESSION_LOGIN","usuario_logado");
 
