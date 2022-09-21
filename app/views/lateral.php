@@ -11,7 +11,7 @@ $dversao = date('d/m/Y', strtotime($cur_idv['data']));
 
 <!-- Page Sidebar Start-->
         <header class="main-nav">
-          <div class="sidebar-user text-center"><img class="img-90 rounded-circle" src="<?php echo URL_BASE ?>assets/images/dashboard/<?php echo $_SESSION[SESSION_LOGIN]->imagem; ?>" alt="">
+       <div class="sidebar-user text-center"><img class="img-90 rounded-circle" src="<?php echo URL_BASE ?>assets/images/dashboard/<?php echo $_SESSION[SESSION_LOGIN]->imagem; ?>" alt="">
             <div class="badge-bottom"><span class="badge badge-primary"></span></div><a href="#">
               <h6 class="mt-3 f-14 f-w-600"><?php echo $_SESSION[SESSION_LOGIN]->nome_usuario; ?></h6></a>
             <p class="mb-0 font-roboto"><?php echo $_SESSION[SESSION_LOGIN]->cargo; ?></p>
@@ -145,7 +145,7 @@ $dversao = date('d/m/Y', strtotime($cur_idv['data']));
                    <?php if($_SESSION[SESSION_LOGIN]->geral){ ?>
                   <li class="sidebar-main-title">
                     <div>
-                      <h6>Geral             </h6>
+                      <h6>Geral</h6>
                     </div>
                   </li>
                   <li class="dropdown"><a class="nav-link menu-title" href="javascript:void(0)"><i data-feather="home"></i><span>Clientes</span></a>
@@ -164,6 +164,14 @@ $dversao = date('d/m/Y', strtotime($cur_idv['data']));
                       <li><a href="<?php echo URL_BASE . "unidade"?>">Unidade</a></li>
                     </ul>
                   </li>
+
+                  <li class="dropdown"><a class="nav-link menu-title" href="javascript:void(0)"><i data-feather="home"></i><span>Empresa</span></a>
+                    <ul class="nav-submenu menu-content">
+                      <li><a href="<?php echo URL_BASE . "empresa"?>">Lista Empresa</a></li>
+                      <li><a href="<?php echo URL_BASE . "empresa/create"?>">Cadastro de Empresa</a></li>
+                    </ul>
+                  </li>
+                  
                    <?php } else {}?>
                </ul>
               </div>
